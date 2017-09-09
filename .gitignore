@@ -5,3 +5,4 @@ dist/
 nbdist/
 .nb-gradle/
 nbproject/project.properties
+src/c_compiler/Lexer.java*
