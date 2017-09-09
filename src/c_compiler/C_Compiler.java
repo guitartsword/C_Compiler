@@ -1,4 +1,5 @@
 package c_compiler;
+
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
@@ -15,9 +16,9 @@ public class C_Compiler {
         //buildParser();
         runFile(file);
     }
-    
-    public static void buildLexer(){
-        
+
+    public static void buildLexer() {
+
         String paramsLexer[] = new String[3];
         paramsLexer[0] = "-d";
         paramsLexer[1] = "src/c_compiler/";
@@ -26,13 +27,12 @@ public class C_Compiler {
             jflex.Main.generate(paramsLexer);
         } catch (Exception e) {
         }
-        
 
     }
-    
+
     public static void buildParser() {
         String params[] = new String[5];
-        
+
         params[0] = "-destdir";
         params[1] = "src/c_compiler/";
         params[2] = "-parser";
@@ -44,8 +44,8 @@ public class C_Compiler {
             System.out.println(e);
         }
     }
-    
-    public static void runFile(String file) throws Exception{
+
+    public static void runFile(String file) throws Exception {
         BufferedReader reader;
         try {
             reader = new BufferedReader(new FileReader("main.c"));
@@ -56,6 +56,5 @@ public class C_Compiler {
             Logger.getLogger(C_Compiler.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
-    
-    
+
 }

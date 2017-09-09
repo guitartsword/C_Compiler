@@ -1,14 +1,23 @@
 package c_compiler;
-//import java_cup.runtime.*;
+import java_cup.runtime.*;
 %%
 %class Lexer
 %int
 %unicode
-%standalone
+%cup
+
+%{
+  private Symbol createToken(int type, Object value){
+    return new Symbol(type, yycolumn, yyline, value);
+  }
+
+  private Symbol createToken(int type){
+    return new Symbol(type, yycolumn,  yyline);
+  }
+%}
 
 LineTerminator = \r|\n|\r\n
 InputCharacter = [^\r\n]
-
 WhiteSpace = [\n\r\t\f ]+
 Identifier = [:jletter:][:jletterdigit:]*
 DecIntegerLiteral = 0 | [1-9][0-9]*
@@ -23,44 +32,46 @@ Multiplication = "*"|"/"
 %state STRING
 %state COMMENTS
 %%
+
+
 <YYINITIAL>{
-    "if" {System.out.println("IF");}
-    "else" {System.out.println("ELSE");}
-    "while" {System.out.println("WHILE");}
-    "for" {System.out.println("FOR");}
-    "int" {System.out.println("INT");}
-    "double" {System.out.println("DOUBLE");}
-    "bool" {System.out.println("BOOL");}
-    "char" {System.out.println("CHAR");}
-    "void" {System.out.println("VOID");}
-    "return" {System.out.println("RETURN");}
-    "include" {System.out.println("INCLUDE");}
-    {Boolean} {System.out.println("BOOLEAN");}
-    "(" {System.out.println("OPENPAREN");}
-    ")" {System.out.println("CLOSEPAREN");}
-    "[" {System.out.println("OPENBRCKT");}
-    "]" {System.out.println("CLOSEBRCKT");}
-    "{" {System.out.println("OPENKEY");}
-    "}" {System.out.println("CLOSEKEY");}
-    "=" {System.out.println("ASSIGN");}
-    {Compare} {System.out.println("OPERATOR_RELATIONAL");}
-    {Sum} {System.out.println("OPERATOR_SUM");}
-    {Multiplication} {System.out.println("OPERATOR_MUL");}
-    ";" {System.out.println("ENDEXP");}
-    "," {System.out.println("COMMA");}
-    "#" {System.out.println("PREPROCESSOR");}
-    "printf" {System.out.println("PRINTF");}
-    "scanf" {System.out.println("SCANF");}
+    "if" {return createToken(sym.IF);}
+    "else" {return createToken(sym.ELSE);}
+    "while" {return createToken(sym.WHILE);}
+    "for" {return createToken(sym.FOR);}
+    "int" {return createToken(sym.INT);}
+    "double" {return createToken(sym.DOUBLE);}
+    "bool" {return createToken(sym.BOOL);}
+    "char" {return createToken(sym.CHAR);}
+    "void" {return createToken(sym.VOID);}
+    "return" {return createToken(sym.RETURN);}
+    "include" {return createToken(sym.INCLUDE);}
+    {Boolean} {return createToken(sym.BOOLEAN);}
+    "(" {return createToken(sym.OPENPAREN);}
+    ")" {return createToken(sym.CLOSEPAREN);}
+    "[" {return createToken(sym.OPENBRCKT);}
+    "]" {return createToken(sym.CLOSEBRCKT);}
+    "{" {return createToken(sym.OPENKEY);}
+    "}" {return createToken(sym.CLOSEKEY);}
+    "=" {return createToken(sym.ASSIGN);}
+    {Compare} {return createToken(sym.OPERATOR_RELATIONAL);}
+    {Sum} {return createToken(sym.OPERATOR_SUM);}
+    {Multiplication} {return createToken(sym.OPERATOR_MUL);}
+    ";" {return createToken(sym.ENDEXP);}
+    "," {return createToken(sym.COMMA);}
+    "#" {return createToken(sym.PREPROCESSOR);}
+    "printf" {return createToken(sym.PRINTF);}
+    "scanf" {return createToken(sym.SCANF);}
     \" {yybegin(STRING);}
-    {CharLiteral} {System.out.println("LITERAL_CHAR");}
-    {DecIntegerLiteral} {System.out.println("LITERAL_INT");}
-    {Identifier} {System.out.println("IDENTIFIER");}
+    {CharLiteral} {return createToken(sym.LITERAL_CHAR);}
+    {DecIntegerLiteral} {return createToken(sym.LITERAL_INT);}
+    {Identifier} {return createToken(sym.IDENTIFIER);}
     {OnelineComment} {System.out.println(yytext());}
     {MultilineComment} {System.out.println(yytext());}
     {WhiteSpace} {}
 }
 <STRING>{
-    \" {yybegin(YYINITIAL);System.out.println("LITERAL_CHARARRAY");}
+    \" {yybegin(YYINITIAL);return createToken(sym.LITERAL_CHARARRAY);}
     \\[:jletterdigit:] {}
     \\\" {}
     . {}
