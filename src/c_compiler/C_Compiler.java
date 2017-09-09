@@ -4,14 +4,15 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java_cup.Lexer;
 
 public class C_Compiler {
 
     public static void main(String[] args) throws Exception {
         // TODO code application logic here
-        String file = "./src/proyecto_compiladores/prueba.pas";
+        String file = "./main.c";
         buildLexer();
-        buildParser();
+        //buildParser();
         runFile(file);
     }
     
@@ -19,8 +20,8 @@ public class C_Compiler {
         
         String paramsLexer[] = new String[3];
         paramsLexer[0] = "-d";
-        paramsLexer[1] = "src/proyecto_compiladores/";
-        paramsLexer[2] = "src/proyecto_compiladores/Lexico.flex";
+        paramsLexer[1] = "src/c_compiler/";
+        paramsLexer[2] = "src/c_compiler/Lexico.flex";
         try {
             jflex.Main.generate(paramsLexer);
         } catch (Exception e) {
@@ -33,10 +34,10 @@ public class C_Compiler {
         String params[] = new String[5];
         
         params[0] = "-destdir";
-        params[1] = "src/proyecto_compiladores/";
+        params[1] = "src/c_compiler/";
         params[2] = "-parser";
         params[3] = "parser";
-        params[4] = "src/proyecto_compiladores/random.cup";
+        params[4] = "src/c_compiler/Sintactico.cup";
         try {
             java_cup.Main.main(params);
         } catch (Exception e) {
@@ -47,7 +48,7 @@ public class C_Compiler {
     public static void runFile(String file) throws Exception{
         BufferedReader reader;
         try {
-            reader = new BufferedReader(new FileReader("prueba1.pas"));
+            reader = new BufferedReader(new FileReader("main.c"));
             Lexer lexer = new Lexer(reader);
             //parser cupParser = new parser(lexer);
             //cupParser.parse();
