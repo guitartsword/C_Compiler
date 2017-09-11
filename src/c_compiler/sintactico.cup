@@ -1,0 +1,72 @@
+package c_compiler;
+
+import java_cup.runtime.*;
+import java.io.Reader;
+
+parser code {:
+  public parser (java.io.Reader input) {
+    super(new Lexer(input));
+  }
+  public void report_error(String errorBody, Object info) {
+    StringBuffer errorHead = new StringBuffer("Error Sintactico");
+      if(info instanceof java_cup.runtime.Symbol){
+        java_cup.runtime.Symbol s = ((java_cup.runtime.Symbol) info);
+        if (s.left >= 0) {
+          errorHead.append(" en la linea: "+(s.right+1));
+          if (s.right >= 0){
+            errorHead.append(", columna: "+(s.left+1));
+        }
+      }
+      errorHead.append(" en el token: "+(s.value));
+      errorHead.append(" -> "+errorBody);
+    }
+    System.err.println(errorHead);
+  }
+
+:};
+
+terminal          IF, ELSE, WHILE, FOR, INT, DOUBLE, BOOL, CHAR, VOID,
+                  RETURN, INCLUDE, LITERAL_BOOL, LPAREN, RPAREN, LBRACKET,
+                  RBRACKET, LKEY, RKEY, ASSIGN, OPERATOR_RELATIONAL,
+                  OPERATOR_SUM, OPERATOR_MUL, ENDEXP, COMMA,
+                  PRINTF, SCANF, LITERAL_CHAR, LITERAL_INT,
+                  LITERAL_STRING, IDENTIFIER;
+
+non terminal ifelse, codeblock, program, ifcond, elifcond, typedef,
+             declaration, condition, relatecondition, boolvar, identifier;
+
+program::=  ifelse
+            | ifcond
+            | declaration
+            | codeblock
+;
+
+codeblock::= LKEY program RKEY
+;
+
+ifelse::= ifcond elifcond codeblock
+;
+
+elifcond::= ELSE ifcond elifcond | ELSE codeblock
+;
+
+ifcond::= IF LPAREN condition RPAREN codeblock
+;
+
+condition::= LITERAL_BOOL | LITERAL_INT | LITERAL_CHAR | relatecondition
+;
+
+relatecondition::= boolvar OPERATOR_RELATIONAL boolvar
+;
+
+boolvar::= IDENTIFIER | LITERAL_INT | LITERAL_CHAR | LITERAL_BOOL
+;
+
+declaration::= typedef identifier ENDEXP
+;
+
+typedef::= BOOL | INT | DOUBLE | CHAR
+;
+
+identifier::= IDENTIFIER COMMA identifier | IDENTIFIER
+;

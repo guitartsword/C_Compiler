@@ -1,7 +1,8 @@
-#include "stdio.h"
-/*This is a multi-line comment
- which ends here
- */
+char xsad;
+char vari,sdsa;
+if(3>3){
+    int x;
+}
 int count = 0;
 void printAndCount(char * string);
 
@@ -26,3 +27,6 @@ int main(int argc, char*[] args){
 void printAndCount(char* string){
     printf("%d: %s", count, string);
 }
+/*This is a multi-line comment
+ which ends here
+ */

@@ -1,4 +1,4 @@
-package proyecto_compiladores;
+package c_compiler;
 
 import java_cup.runtime.*;
 import java.io.FileReader;

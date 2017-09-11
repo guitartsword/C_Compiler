@@ -12,7 +12,7 @@ import java_cup.runtime.*;
   }
 
   private Symbol createToken(int type){
-    return new Symbol(type, yycolumn,  yyline);
+    return new Symbol(type, yycolumn, yyline);
   }
 %}
 
@@ -22,7 +22,6 @@ WhiteSpace = [\n\r\t\f ]+
 Identifier = [:jletter:][:jletterdigit:]*
 DecIntegerLiteral = 0 | [1-9][0-9]*
 CharLiteral = \'[([:jletterdigit:]|(\\([:jletterdigit:]|\\\\|\"|\\\')))]\'
-StringLiteral = \"[^\"]*\"
 OnelineComment = "//"{InputCharacter}*{LineTerminator}
 MultilineComment = "/*" ~"*/"
 Boolean = "true"|"false"
@@ -46,32 +45,31 @@ Multiplication = "*"|"/"
     "void" {return createToken(sym.VOID);}
     "return" {return createToken(sym.RETURN);}
     "include" {return createToken(sym.INCLUDE);}
-    {Boolean} {return createToken(sym.BOOLEAN);}
-    "(" {return createToken(sym.OPENPAREN);}
-    ")" {return createToken(sym.CLOSEPAREN);}
-    "[" {return createToken(sym.OPENBRCKT);}
-    "]" {return createToken(sym.CLOSEBRCKT);}
-    "{" {return createToken(sym.OPENKEY);}
-    "}" {return createToken(sym.CLOSEKEY);}
+    {Boolean} {return createToken(sym.LITERAL_BOOL);}
+    "(" {return createToken(sym.LPAREN);}
+    ")" {return createToken(sym.RPAREN);}
+    "[" {return createToken(sym.LBRACKET);}
+    "]" {return createToken(sym.RBRACKET);}
+    "{" {return createToken(sym.LKEY);}
+    "}" {return createToken(sym.RKEY);}
     "=" {return createToken(sym.ASSIGN);}
     {Compare} {return createToken(sym.OPERATOR_RELATIONAL);}
     {Sum} {return createToken(sym.OPERATOR_SUM);}
     {Multiplication} {return createToken(sym.OPERATOR_MUL);}
     ";" {return createToken(sym.ENDEXP);}
     "," {return createToken(sym.COMMA);}
-    "#" {return createToken(sym.PREPROCESSOR);}
     "printf" {return createToken(sym.PRINTF);}
     "scanf" {return createToken(sym.SCANF);}
     \" {yybegin(STRING);}
     {CharLiteral} {return createToken(sym.LITERAL_CHAR);}
     {DecIntegerLiteral} {return createToken(sym.LITERAL_INT);}
     {Identifier} {return createToken(sym.IDENTIFIER);}
-    {OnelineComment} {System.out.println(yytext());}
-    {MultilineComment} {System.out.println(yytext());}
+    {OnelineComment} {}
+    {MultilineComment} {}
     {WhiteSpace} {}
 }
 <STRING>{
-    \" {yybegin(YYINITIAL);return createToken(sym.LITERAL_CHARARRAY);}
+    \" {yybegin(YYINITIAL);return createToken(sym.LITERAL_STRING);}
     \\[:jletterdigit:] {}
     \\\" {}
     . {}
