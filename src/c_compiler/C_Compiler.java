@@ -3,11 +3,8 @@ package c_compiler;
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
-import java.io.InputStreamReader;
-import java.util.Scanner;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import java_cup.Lexer;
 //import java_cup.parser;
 
 public class C_Compiler {

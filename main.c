@@ -1,5 +1,4 @@
 char xsad;
-char vari,sdsa;
 if(3>3){
     int x;
 }
