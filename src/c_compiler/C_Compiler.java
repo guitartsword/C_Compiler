@@ -1,28 +1,19 @@
 package c_compiler;
 
-import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-//import java_cup.parser;
 
 public class C_Compiler {
 
     public static void main(String[] args) {
         // TODO code application logic here
-        String file = "./main.c";
-        System.out.println("EXECUTING JFLEX");
+        String file = "prueba.c";
         buildLexer();
-        System.out.println("FINISHED EXECUTING JFLEX");
-        
-        System.out.println("EXECUTING CUP");
         buildParser();
-        System.out.println("FINISHED EXECUTING CUP");
-        
-        System.out.println("RUNNING ANALYZER");
         runFile(file);
-        System.out.println("FINISHED EXECUTING ANALYZER");
+        System.out.println("END");
     }
 
     public static void buildLexer() {
@@ -55,11 +46,10 @@ public class C_Compiler {
     }
 
     public static void runFile(String file){
-        BufferedReader reader;
         try {
-            reader = new BufferedReader(new FileReader("main.c"));
-            Lexer lexer = new Lexer(reader);
-            parser cupParser = new parser(lexer);
+            //reader = new BufferedReader(new FileReader("prueba.c"));
+            //Lexer lexer = new Lexer(reader);
+            parser cupParser = new parser(new FileReader(file));
             cupParser.parse();
         } catch (FileNotFoundException ex) {
             Logger.getLogger(C_Compiler.class.getName()).log(Level.SEVERE, null, ex);

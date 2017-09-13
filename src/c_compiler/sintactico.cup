@@ -7,6 +7,9 @@ parser code {:
   public parser (java.io.Reader input) {
     super(new Lexer(input));
   }
+  public void syntax_error(Symbol cur_token){
+    System.err.println("Syntax error at "+cur_token);
+  }
   public void report_error(String errorBody, Object info) {
     StringBuffer errorHead = new StringBuffer("Error Sintactico");
       if(info instanceof java_cup.runtime.Symbol){
@@ -32,41 +35,21 @@ terminal          IF, ELSE, WHILE, FOR, INT, DOUBLE, BOOL, CHAR, VOID,
                   PRINTF, SCANF, LITERAL_CHAR, LITERAL_INT,
                   LITERAL_STRING, IDENTIFIER;
 
-non terminal ifelse, codeblock, program, ifcond, elifcond, typedef,
-             declaration, condition, relatecondition, boolvar, identifier;
+non terminal      program, declaration, typedef, identifier;
 
-program::=  ifelse
-            | ifcond
-            | declaration
-            | codeblock
+program::= declaration {: System.out.println("NO ERROR FOUND"); :}
+           |declaration program {:System.out.println("###############");:}
 ;
 
-codeblock::= LKEY program RKEY
+declaration::= identifier ENDEXP {:System.out.println("finished");:}
 ;
 
-ifelse::= ifcond elifcond codeblock
+identifier::= typedef IDENTIFIER:id {:System.out.println(id);:}
+              | identifier COMMA IDENTIFIER:id {:System.out.println(id);:}
 ;
 
-elifcond::= ELSE ifcond elifcond | ELSE codeblock
-;
-
-ifcond::= IF LPAREN condition RPAREN codeblock
-;
-
-condition::= LITERAL_BOOL | LITERAL_INT | LITERAL_CHAR | relatecondition
-;
-
-relatecondition::= boolvar OPERATOR_RELATIONAL boolvar
-;
-
-boolvar::= IDENTIFIER | LITERAL_INT | LITERAL_CHAR | LITERAL_BOOL
-;
-
-declaration::= typedef identifier ENDEXP
-;
-
-typedef::= BOOL | INT | DOUBLE | CHAR
-;
-
-identifier::= IDENTIFIER COMMA identifier | IDENTIFIER
+typedef::= BOOL {:System.out.println("bool");:}
+           | INT {:System.out.println("int");:}
+           | DOUBLE {:System.out.println("double");:}
+           | CHAR {:System.out.println("char");:}
 ;

@@ -1,8 +1,8 @@
 char xsad;
+int count = 0;
 if(3>3){
     int x;
 }
-int count = 0;
 void printAndCount(char * string);
 
 int main(int argc, char*[] args){
