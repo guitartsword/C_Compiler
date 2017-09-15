@@ -8,7 +8,10 @@ parser code {:
     super(new Lexer(input));
   }
   public void syntax_error(Symbol cur_token){
-    System.err.println("Syntax error at "+cur_token);
+    System.err.printf("Error at line:%d, column:%d, token:%s :: ",
+      cur_token.right+1,
+      cur_token.left+1,
+      cur_token.value);
   }
   public void report_error(String errorBody, Object info) {
     StringBuffer errorHead = new StringBuffer("Error Sintactico");
@@ -37,19 +40,21 @@ terminal          IF, ELSE, WHILE, FOR, INT, DOUBLE, BOOL, CHAR, VOID,
 
 non terminal      program, declaration, typedef, identifier;
 
-program::= declaration {: System.out.println("NO ERROR FOUND"); :}
-           |declaration program {:System.out.println("###############");:}
+program::= declaration {: System.out.println("Syntax analyzer finished"); :}
+           |declaration program
 ;
 
-declaration::= identifier ENDEXP {:System.out.println("finished");:}
+declaration::= identifier ENDEXP
+               | error:e ENDEXP {:System.err.printf("syntax error declaration\n");:}
 ;
 
-identifier::= typedef IDENTIFIER:id {:System.out.println(id);:}
-              | identifier COMMA IDENTIFIER:id {:System.out.println(id);:}
+identifier::= typedef IDENTIFIER:id
+              | identifier COMMA IDENTIFIER:id
+              | typedef error {:System.err.printf("expected identifier comma identifier\n");:}
 ;
 
-typedef::= BOOL {:System.out.println("bool");:}
-           | INT {:System.out.println("int");:}
-           | DOUBLE {:System.out.println("double");:}
-           | CHAR {:System.out.println("char");:}
+typedef::= BOOL
+           | INT
+           | DOUBLE
+           | CHAR
 ;

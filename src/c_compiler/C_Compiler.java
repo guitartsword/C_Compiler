@@ -13,7 +13,6 @@ public class C_Compiler {
         buildLexer();
         buildParser();
         runFile(file);
-        System.out.println("END");
     }
 
     public static void buildLexer() {
@@ -32,7 +31,6 @@ public class C_Compiler {
 
     public static void buildParser() {
         String params[] = new String[5];
-
         params[0] = "-destdir";
         params[1] = "src/c_compiler/";
         params[2] = "-parser";
@@ -47,8 +45,6 @@ public class C_Compiler {
 
     public static void runFile(String file){
         try {
-            //reader = new BufferedReader(new FileReader("prueba.c"));
-            //Lexer lexer = new Lexer(reader);
             parser cupParser = new parser(new FileReader(file));
             cupParser.parse();
         } catch (FileNotFoundException ex) {

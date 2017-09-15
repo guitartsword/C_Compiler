@@ -5,6 +5,8 @@ import java_cup.runtime.*;
 %int
 %unicode
 %cup
+%line
+%column
 
 %{
   private Symbol createToken(int type, Object value){
