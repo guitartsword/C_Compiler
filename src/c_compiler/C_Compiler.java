@@ -9,10 +9,15 @@ public class C_Compiler {
 
     public static void main(String[] args) {
         // TODO code application logic here
-        String file = "main.c";
+        String[] files = {
+            "main.c"
+        };
         buildLexer();
         buildParser();
-        runFile(file);
+        for (String file:files) {
+            System.out.println("FILE:" + file);
+            runFile(file);
+        }
     }
 
     public static void buildLexer() {

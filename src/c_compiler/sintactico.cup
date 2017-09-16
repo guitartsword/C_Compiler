@@ -8,7 +8,7 @@ parser code {:
     super(new Lexer(input));
   }
   public void syntax_error(Symbol cur_token){
-    System.err.printf("Error at line:%d, column:%d, token:%s :: ",
+    System.err.printf("Error at line:%d, column:%d, token:%s \n",
       cur_token.right+1,
       cur_token.left+1,
       cur_token.value);
@@ -21,40 +21,66 @@ parser code {:
           errorHead.append(" en la linea: "+(s.right+1));
           if (s.right >= 0){
             errorHead.append(", columna: "+(s.left+1));
+          }
         }
-      }
-      errorHead.append(" en el token: "+(s.value));
-      errorHead.append(" -> "+errorBody);
+        errorHead.append(" en el token: "+(s.value));
+        errorHead.append(" -> "+errorBody);
     }
     System.err.println(errorHead);
   }
 
 :};
 
-terminal          IF, ELSE, WHILE, FOR, INT, DOUBLE, BOOL, CHAR, VOID,
-                  RETURN, INCLUDE, LITERAL_BOOL, LPAREN, RPAREN, LBRACKET,
-                  RBRACKET, LKEY, RKEY, ASSIGN, OPERATOR_RELATIONAL,
-                  OPERATOR_SUM, OPERATOR_MUL, ENDEXP, COMMA,
-                  PRINTF, SCANF, LITERAL_CHAR, LITERAL_INT,
-                  LITERAL_STRING, IDENTIFIER;
-
-non terminal      program, declaration, typedef, identifier;
-
-program::= declaration {: System.out.println("Syntax analyzer finished"); :}
-           |declaration program
+terminal        IF, ELSE, WHILE, FOR, INT, DOUBLE, BOOL, CHAR, VOID,
+                RETURN, INCLUDE, LITERAL_BOOL, LPAREN, RPAREN, LBRACKET,
+                RBRACKET, LKEY, RKEY, ASSIGN, OPERATOR_RELATIONAL,
+                OPERATOR_SUM, OPERATOR_MUL, ENDEXP, COMMA,
+                PRINTF, SCANF, LITERAL_CHAR, LITERAL_INT,
+                LITERAL_STRING, IDENTIFIER
 ;
 
-declaration::= identifier ENDEXP
-               | error:e ENDEXP {:System.err.printf("syntax error declaration\n");:}
+non terminal    program, declaration, typedef, identifier_list, parameters,
+                func_declaration, statements, init_program, compound_expression
 ;
 
-identifier::= typedef IDENTIFIER:id
-              | identifier COMMA IDENTIFIER:id
-              | typedef error {:System.err.printf("expected identifier comma identifier\n");:}
+init_program::= program {:System.out.println("Syntax Analyze Finshed");:}
+;
+
+program::= statements program
+    | statements
+;
+
+statements::= declaration
+    | func_declaration
+    | compound_expression
+;
+
+compound_expression::= LKEY statements RKEY
+    | LKEY RKEY
+;
+
+func_declaration::= typedef IDENTIFIER LPAREN parameters RPAREN ENDEXP
+    | typedef IDENTIFIER LPAREN RPAREN ENDEXP
+;
+
+parameters::= typedef IDENTIFIER
+    | typedef
+    | typedef IDENTIFIER COMMA parameters
+    | typedef COMMA parameters
+    | error {:System.err.println("Eror in parameters");:}
+;
+
+declaration::= identifier_list ENDEXP
+    | error ENDEXP {:System.err.println("Error at declaration");:}
+;
+
+identifier_list::= typedef IDENTIFIER:id
+    | identifier_list COMMA IDENTIFIER:id
 ;
 
 typedef::= BOOL
-           | INT
-           | DOUBLE
-           | CHAR
+    | INT
+    | DOUBLE
+    | CHAR
+    | VOID
 ;

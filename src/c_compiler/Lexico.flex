@@ -9,6 +9,7 @@ import java_cup.runtime.*;
 %column
 
 %{
+  StringBuffer string = new StringBuffer();
   private Symbol createToken(int type, Object value){
     return new Symbol(type, yycolumn, yyline, value);
   }
@@ -62,17 +63,22 @@ Multiplication = "*"|"/"
     "," {return createToken(sym.COMMA, yytext());}
     "printf" {return createToken(sym.PRINTF, yytext());}
     "scanf" {return createToken(sym.SCANF, yytext());}
-    \" {yybegin(STRING);}
+    \" {string.setLength(0);yybegin(STRING);}
     {CharLiteral} {return createToken(sym.LITERAL_CHAR, yytext());}
     {DecIntegerLiteral} {return createToken(sym.LITERAL_INT, yytext());}
     {Identifier} {return createToken(sym.IDENTIFIER, yytext());}
     {OnelineComment} {}
     {MultilineComment} {}
     {WhiteSpace} {}
+    . {System.err.println("Error lexico en token: " + yytext());}
 }
 <STRING>{
-    \" {yybegin(YYINITIAL);return createToken(sym.LITERAL_STRING, "a string");}
-    \\[:jletterdigit:] {}
-    \\\" {}
-    . {}
+    \" {yybegin(YYINITIAL);return createToken(sym.LITERAL_STRING, string.toString());}
+    [^\n\r\"\\]+                   { string.append( yytext() ); }
+    \\t                            { string.append('\t'); }
+    \\n                            { string.append('\n'); }
+
+    \\r                            { string.append('\r'); }
+    \\\"                           { string.append('\"'); }
+    \\                             { string.append('\\'); }
 }
