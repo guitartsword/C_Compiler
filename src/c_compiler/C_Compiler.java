@@ -7,7 +7,7 @@ import java.util.logging.Logger;
 
 public class C_Compiler {
 
-    public static void main(String[] args) throws InterruptedException {
+    public static void main(String[] args){
         // TODO code application logic here
         String[] files = {
             "main.c",
@@ -16,7 +16,7 @@ public class C_Compiler {
         buildLexer();
         buildParser();
         for (String file:files) {
-            Thread.sleep(500);
+            System.err.flush();
             System.out.println("\nCompilando Archivo " + file);
             runFile(file);
             System.out.println("---------------------------------------------------------------\n");
