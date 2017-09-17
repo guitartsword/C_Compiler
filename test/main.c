@@ -35,9 +35,10 @@ int main(int argc, char* args){
         char x2;
     }
     //printf scanf
+    printAndCount(arit,3);
     printf("hola %d",3);
     scanf(arit,3);
-    int xy='2';
+    int xy='\n';
     int x=2;
     bool algo = false;
     //"yo no soy un " String literal"

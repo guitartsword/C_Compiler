@@ -13,8 +13,8 @@ public class C_Compiler {
             "main.c",
             "prueba.c"
         };
-        buildLexer();
-        buildParser();
+        //buildLexer();
+        //buildParser();
         for (String file:files) {
             System.err.flush();
             System.out.println("\nCompilando Archivo " + file);

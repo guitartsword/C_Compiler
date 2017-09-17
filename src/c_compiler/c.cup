@@ -113,6 +113,10 @@ postfix_expression ::=
 	| postfix_expression:pe SQUAREDL expression:index SQUAREDR
 	| postfix_expression:pe PARAL PARAR
 	| postfix_expression:pe PARAL expression:e PARAR
+	| PRINTF PARAL PARAR
+	| SCANF PARAL PARAR
+	| PRINTF PARAL expression PARAR
+	| SCANF PARAL expression PARAR
 	| postfix_expression:pe POINT IDENTIFIER:id
 	| postfix_expression:pe PTR_OP IDENTIFIER:id
 	| postfix_expression:pe INC_OP:op

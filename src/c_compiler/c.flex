@@ -25,6 +25,7 @@ import java_cup.runtime.*;
 
 Digit = [0-9]
 Letter = [a-zA-Z_]
+CharLiteral = \'([:jletterdigit:]| (\\ ([:jletterdigit:]|\\|"'") ) )\'
 H = [a-fA-F0-9]
 E = [Ee][+-]?{Digit}+
 FS = (f|F|l|L)
@@ -124,7 +125,7 @@ white_space = {new_line} | [ \t\f]
 0[xX]{H}+{IS}?		{ return symbol(sym.CONSTANT,yytext()); }
 0{Digit}+{IS}?		{ return symbol(sym.CONSTANT,yytext()); }
 {Digit}+{IS}?		{ return symbol(sym.CONSTANT,yytext()); }
-L?'(\\.|[^\\'])+'	{ return symbol(sym.CONSTANT,yytext()); }
+{CharLiteral}		{ return symbol(sym.CONSTANT,yytext()); }
 {Digit}+{E}{FS}?		{ return symbol(sym.CONSTANT,yytext()); }
 {Digit}*"."{Digit}+({E})?{FS}?	{ return symbol(sym.CONSTANT,yytext()); }
 {Digit}+"."{Digit}*({E})?{FS}?	{ return symbol(sym.CONSTANT,yytext()); }
