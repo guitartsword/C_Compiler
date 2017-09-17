@@ -95,9 +95,9 @@ non terminal S;
 precedence nonassoc ELSE;
 start with S;
 
-S::=
+S ::=
 	translation_unit {:System.out.println("Syntax Analyze Completed Successfully");:}
-;
+	;
 
 primary_expression ::=
 	IDENTIFIER:ident
