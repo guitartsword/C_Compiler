@@ -16,7 +16,7 @@ public class C_Compiler {
         buildLexer();
         buildParser();
         for (String file:files) {
-            System.out.println("Compilando Archivo " + file);
+            System.out.println("\nCompilando Archivo " + file);
             runFile(file);
             System.out.println("---------------------------------------------------------------\n");
         }
