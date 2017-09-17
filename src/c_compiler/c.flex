@@ -130,4 +130,5 @@ white_space = {new_line} | [ \t\f]
 {Digit}*"."{Digit}+({E})?{FS}?	{ return symbol(sym.CONSTANT,yytext()); }
 {Digit}+"."{Digit}*({E})?{FS}?	{ return symbol(sym.CONSTANT,yytext()); }
 L?\"(\\.|[^\\\"])*\"	{ return symbol(sym.STRING_LITERAL,yytext()); }
-[^]			{ System.err.println("Error Lexico, token no identificado: "+yytext()+" "+(yyline+1)+" : "+(yycolumn+1)); }
+L?'(\\.|[^\\'])+'	{ System.err.println("Error Lexico, comillas dobles para strings: "+yytext()+" "+(yyline+1)+" : "+(yycolumn+1));}
+[^]			{ System.err.println("Error Lexico, token no identificado: "+yytext()+" "+(yyline+1)+" : "+(yycolumn+1));}

@@ -31,8 +31,8 @@ int main(int argc, char* args){
         }
         printf(arit);
     }else{
-        char x1 = 'i';
-        char x2;
+        char x1 = 's';
+        char x2, x3;
     }
     //printf scanf
     printAndCount(arit,3);

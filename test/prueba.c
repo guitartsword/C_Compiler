@@ -9,6 +9,9 @@ int hello(int value, bool debug);
 int x, a;
 char function(key, value);
 int main(){
+    char x=3*3;
+    =0x23;
+    hello('s');
     hello('\'');
     hello('\n');
     hello('\t');
