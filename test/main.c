@@ -6,8 +6,19 @@ int main2(){
     bool no_if=true;
     return 0;
 }
+void main3(int argc){
+    bool yes=false;
+    if(true){
+        do_this();
+    }else{
+        do_that();
+    }
+}
 int main(int argc, char* args){
     int aritmetica = 3+3+6/2*3;
+    while(3+3){
+        
+    }
     char x= '2';
     int x= 2;
     //"yo no soy un " String literal"

@@ -10,13 +10,15 @@ public class C_Compiler {
     public static void main(String[] args) {
         // TODO code application logic here
         String[] files = {
-            "test/main.c"
+            "main.c",
+            "prueba.c"
         };
         buildLexer();
         buildParser();
         for (String file:files) {
             System.out.println("Compilando Archivo " + file);
             runFile(file);
+            System.out.println("---------------------------------------------------------------\n");
         }
     }
 
@@ -50,7 +52,7 @@ public class C_Compiler {
 
     public static void runFile(String file){
         try {
-            parser cupParser = new parser(new FileReader(file));
+            parser cupParser = new parser(new FileReader("test/"+file));
             cupParser.parse();
         } catch (FileNotFoundException ex) {
             Logger.getLogger(C_Compiler.class.getName()).log(Level.SEVERE, null, ex);

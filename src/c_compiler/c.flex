@@ -45,6 +45,8 @@ white_space = {new_line} | [ \t\f]
 "const"			{ return symbol(sym.CONST,yytext()); }
 "continue"		{ return symbol(sym.CONTINUE,yytext()); }
 "default"		{ return symbol(sym.DEFAULT,yytext()); }
+"printf"		{ return symbol(sym.PRINTF,yytext()); }
+"scanf"			{ return symbol(sym.SCANF,yytext()); }
 "do"			{ return symbol(sym.DO,yytext()); }
 "bool"		{ return symbol(sym.BOOL,yytext()); }
 "double"		{ return symbol(sym.DOUBLE,yytext()); }

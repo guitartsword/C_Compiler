@@ -6,17 +6,17 @@ import java_cup.runtime.*;
 parser code {:
 	public parser (java.io.Reader input) {super(new Lexer(input));}
 	public void report_error(String errorBody, Object info) {
-		StringBuffer errorHead = new StringBuffer("Error Sintactico");
+		StringBuffer errorHead = new StringBuffer("Error");
 			if(info instanceof java_cup.runtime.Symbol){
 				java_cup.runtime.Symbol s = ((java_cup.runtime.Symbol) info);
 				if (s.left >= 0) {
-					errorHead.append(" en la linea: "+(s.right+1));
+					errorHead.append(" en la linea "+(s.right+1));
 					if (s.right >= 0){
-						errorHead.append(", columna: "+(s.left+1));
+						errorHead.append(", columna "+(s.left+1));
 				}
 			}
-			errorHead.append(" en el token: "+(s.value));
-			errorHead.append(" -> "+errorBody);
+			errorHead.append(" en el token "+(s.value));
+			errorHead.append(": "+errorBody);
 		}
 		System.err.println(errorHead);
 	}
@@ -27,7 +27,9 @@ terminal BOOL, IDENTIFIER, CONSTANT, STRING_LITERAL, SIZEOF, PTR_OP, INC_OP, DEC
 		XOR_ASSIGN, OR_ASSIGN, TYPE_NAME, TYPEDEF, EXTERN, STATIC, AUTO, REGISTER,
 		CHAR, SHORT, INT, LONG, SIGNED, UNSIGNED, FLOAT, DOUBLE, CONST, VOLATILE, VOID, STRUCT, UNION, ENUM, ELLIPSIS,
 		CASE, DEFAULT, IF, ELSE, SWITCH, WHILE, DO, FOR, GOTO, CONTINUE, BREAK, RETURN,
-		SEMI, CURLYL, CURLYR, COMMA, COLON, ASSIGN, PARAL, PARAR, SQUAREDL, SQUAREDR, POINT, ADRESS, NOT, TILDE, MINUS, PLUS, MUL, DIVIDE, MODULUS, LESS, GREATER, XOR, OR, COND;
+		SEMI, CURLYL, CURLYR, COMMA, COLON, ASSIGN, PARAL, PARAR, SQUAREDL, SQUAREDR, POINT, ADRESS,
+		NOT, TILDE, MINUS, PLUS, MUL, DIVIDE, MODULUS, LESS, GREATER, XOR, OR, COND,
+		SCANF, PRINTF;
 
 non terminal translation_unit;
 non terminal primary_expression;
@@ -206,7 +208,6 @@ conditional_expression ::=
 	| logical_or_expression:loe COND expression:e COLON conditional_expression:ce
 	;
 
-
 assignment_expression ::=
 	conditional_expression:ce
 	| unary_expression:ue assignment_operator:aop assignment_expression:ae
@@ -238,13 +239,14 @@ constant_expression ::=
 declaration ::=
 	declaration_specifiers:ds SEMI
 	| declaration_specifiers:ds init_declarator_list:idl SEMI
+	| declaration_specifiers:ds error {:System.err.println("Se esperaba ; en la declaracion " + ds);:}
 	;
 
 declaration_specifiers ::=
 	storage_class_specifier:scc
 	| storage_class_specifier:scc declaration_specifiers:ds
-	| type_specifier:ts
-	| type_specifier:ts declaration_specifiers:ds
+	| type_specifier:ts {:RESULT = ts;:}
+	| type_specifier:ts declaration_specifiers:ds {:RESULT = ts;:}
 	| type_qualifier:tq
 	| type_qualifier:tq declaration_specifiers:ds
 	;
@@ -268,19 +270,19 @@ storage_class_specifier ::=
 	;
 
 type_specifier ::=
-	VOID:type
-	| CHAR:type
-	| SHORT:type
-	| INT:type
-	| LONG:type
-	| FLOAT:type
-	| DOUBLE:type
-	| BOOL:type
-	| SIGNED:type
-	| UNSIGNED:type
+	VOID:type {:RESULT = type;:}
+	| CHAR:type {:RESULT = type;:}
+	| SHORT:type {:RESULT = type;:}
+	| INT:type {:RESULT = type;:}
+	| LONG:type {:RESULT = type;:}
+	| FLOAT:type {:RESULT = type;:}
+	| DOUBLE:type {:RESULT = type;:}
+	| BOOL:type {:RESULT = type;:}
+	| SIGNED:type {:RESULT = type;:}
+	| UNSIGNED:type {:RESULT = type;:}
 	| struct_or_union_specifier:su
 	| enum_specifier:es
-	| TYPE_NAME:type
+	| TYPE_NAME:type {:RESULT = type;:}
 	;
 
 struct_or_union_specifier ::=
@@ -483,6 +485,7 @@ translation_unit ::=
 external_declaration ::=
 	function_definition:fd
 	| declaration:d
+	| error {:System.err.println("No se esperaba este token");:}
 	;
 
 function_definition ::=
