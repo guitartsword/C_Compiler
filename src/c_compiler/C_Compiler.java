@@ -10,12 +10,12 @@ public class C_Compiler {
     public static void main(String[] args) {
         // TODO code application logic here
         String[] files = {
-            "main.c"
+            "test/main.c"
         };
-        //buildLexer();
-        //buildParser();
+        buildLexer();
+        buildParser();
         for (String file:files) {
-            System.out.println("FILE:" + file);
+            System.out.println("Compilando Archivo " + file);
             runFile(file);
         }
     }

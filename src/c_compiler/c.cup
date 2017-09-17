@@ -96,7 +96,7 @@ precedence nonassoc ELSE;
 start with S;
 
 S ::=
-	translation_unit {:System.out.println("Syntax Analyze Completed Successfully");:}
+	translation_unit {:System.out.println("Analisis Sintactico Completado Exitosamente");:}
 	;
 
 primary_expression ::=
@@ -346,7 +346,7 @@ declarator ::=
 	;
 
 direct_declarator ::=
-	IDENTIFIER:identifier 
+	IDENTIFIER:identifier
 	| PARAL declarator:d PARAR
 	| direct_declarator:dd SQUAREDL constant_expression:ce SQUAREDR
 	| direct_declarator:dd SQUAREDL SQUAREDR
@@ -427,7 +427,7 @@ statement ::=
 	labeled_statement:ls
 	| compound_statement:cs
 	| expression_statement:es
-	| selection_statement:ss 
+	| selection_statement:ss
 	| iteration_statement:is
 	| jump_statement:js;
 
