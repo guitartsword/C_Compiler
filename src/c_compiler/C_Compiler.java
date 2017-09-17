@@ -11,7 +11,8 @@ public class C_Compiler {
         // TODO code application logic here
         String[] files = {
             "main.c",
-            "prueba.c"
+            "prueba.c",
+            "small.c"
         };
         //buildLexer();
         //buildParser();

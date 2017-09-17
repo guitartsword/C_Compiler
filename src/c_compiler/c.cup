@@ -215,6 +215,7 @@ conditional_expression ::=
 assignment_expression ::=
 	conditional_expression:ce
 	| unary_expression:ue assignment_operator:aop assignment_expression:ae
+	| error assignment_operator assignment_expression {:System.err.println("Asignacion solo a identificadores");:}
 	;
 
 assignment_operator ::=
