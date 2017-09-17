@@ -12,8 +12,8 @@ public class C_Compiler {
         String[] files = {
             "main.c"
         };
-        buildLexer();
-        buildParser();
+        //buildLexer();
+        //buildParser();
         for (String file:files) {
             System.out.println("FILE:" + file);
             runFile(file);
