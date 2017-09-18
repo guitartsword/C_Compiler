@@ -7,20 +7,20 @@ import java.util.logging.Logger;
 
 public class C_Compiler {
 
-    public static void main(String[] args){
+    public static void main(String[] args) throws InterruptedException{
         // TODO code application logic here
         String[] files = {
             "main",
             "prueba",
             "small"
         };
-        //buildLexer();
-        //buildParser();
+        buildLexer();
+        buildParser();
+        Thread.sleep(1000);
         for (String file:files) {
-            System.err.flush();
             System.out.println("\nCompilando Archivo " + file);
             runFile(file);
-            System.err.flush();
+            System.out.println("Compilacion Completada");
             System.out.println("---------------------------------------------------------------\n");
         }
     }
