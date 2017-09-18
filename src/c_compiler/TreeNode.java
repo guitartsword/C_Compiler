@@ -111,7 +111,15 @@ public class TreeNode {
     public void saveTreeToFile(String name){
         try {
             FileOutputStream out = new FileOutputStream(name + ".tree");
-            writeToFile("",true,out);
+            try {
+                writeToFile("", true, out);
+                out.flush();
+                out.close();
+            } catch (IOException iOException) {
+                out.flush();
+                out.close();
+                System.err.println("WritngToFile Error");
+            }
         } catch (FileNotFoundException ex) {
             System.err.println("FileNotFound Error");
         } catch (IOException ex) {

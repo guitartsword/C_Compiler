@@ -1453,6 +1453,22 @@ expression_statement ::=
 		parent.addChild(";");
 		RESULT = parent;
 	:}
+	| expression:e declaration:d{:
+		TreeNode parent = new TreeNode(null, "expression_statement");
+		parent.addChild(e);
+		parent.addChild("ERROR");
+		RESULT = parent;
+		System.err.println("Se esperaba ; no una declaración");
+		System.err.println(RESULT);
+	:}
+	| error SEMI {:
+		TreeNode parent = new TreeNode(null, "expression_statement");
+		parent.addChild("ERROR");
+		parent.addChild(";");
+		RESULT = parent;
+		System.err.println("Expresion malformada");
+		System.err.println(RESULT);
+	:}
 	;
 
 selection_statement ::=

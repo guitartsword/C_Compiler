@@ -52,3 +52,6 @@ void printAndCount(char* string){
 /*This is a multi-line comment
  which ends here
  */
+if(true){
+    printf("hola\n");
+}

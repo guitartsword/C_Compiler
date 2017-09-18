@@ -17,7 +17,6 @@ int main(){
     hello('\t');
     hello('\0');
     hello('\r');
-    hello('\5');
-    hello('\q');
-    printf(3, "hi");
+    hello('\5')
+    char x = 3;
 }
