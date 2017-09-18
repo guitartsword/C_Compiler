@@ -102,7 +102,7 @@ public class TreeNode {
         int index = 0;
         for (TreeNode child:childs){
             index++;
-            child.toString(indent, index==childs.size());
+            child.prettyPrint(indent, index==childs.size());
         }
     }
 }

@@ -100,6 +100,7 @@ start with S;
 S ::=
 	translation_unit:tu {:
 		System.out.println("Analisis Sintactico Completado Exitosamente");
+		System.err.flush();
 		TreeNode parent = new TreeNode(null, "S");
 		parent.addChild(tu);
 		parent.prettyPrint();
