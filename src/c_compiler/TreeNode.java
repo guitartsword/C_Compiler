@@ -5,6 +5,9 @@
  */
 package c_compiler;
 
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 
 /**
@@ -103,6 +106,34 @@ public class TreeNode {
         for (TreeNode child:childs){
             index++;
             child.prettyPrint(indent, index==childs.size());
+        }
+    }
+    public void saveTreeToFile(String name){
+        try {
+            FileOutputStream out = new FileOutputStream(name + ".tree");
+            writeToFile("",true,out);
+        } catch (FileNotFoundException ex) {
+            System.err.println("FileNotFound Error");
+        } catch (IOException ex) {
+            System.err.println("WritngToFile Error");
+        }
+    }
+
+    private void writeToFile(String indent, boolean last, FileOutputStream out) throws IOException {
+        out.write(indent.getBytes());
+        if(last){
+            out.write("└───".getBytes());
+            indent += "    ";
+        }else{
+            out.write("├───".getBytes());
+            indent += "│   ";
+        }
+        out.write(value.toString().getBytes());
+        out.write("\n".getBytes());
+        int index = 0;
+        for (TreeNode child:childs){
+            index++;
+            child.writeToFile(indent, index==childs.size(), out);
         }
     }
 }

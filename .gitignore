@@ -8,3 +8,4 @@ nbproject/project.properties
 src/c_compiler/Lexer.java*
 src/c_compiler/parser.java*
 src/c_compiler/sym.java*
+*.tree

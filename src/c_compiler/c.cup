@@ -15,7 +15,10 @@ parser code {:
 						errorHead.append(", columna "+(s.left+1));
 				}
 			}
-			errorHead.append(" en el token "+(s.value));
+			errorHead.append(" en el token ");
+			if(s.value != null){
+				errorHead.append(s.value);
+			}
 			errorHead.append(": "+errorBody);
 		}
 		System.err.println(errorHead);
@@ -103,7 +106,8 @@ S ::=
 		System.err.flush();
 		TreeNode parent = new TreeNode(null, "S");
 		parent.addChild(tu);
-		parent.prettyPrint();
+		//parent.prettyPrint();
+		RESULT = parent;
 	:}
 	;
 
@@ -548,12 +552,13 @@ assignment_expression ::=
 		RESULT = parent;
 	:}
 	| error assignment_operator:aop assignment_expression:ae {:
-		System.err.println("Asignacion solo a identificadores");
 		TreeNode parent = new TreeNode(null, "assignment_expression");
 		parent.addChild("ERROR");
 		parent.addChild(aop);
 		parent.addChild(ae);
 		RESULT = parent;
+		System.err.println("Asignacion solo a identificadores");
+		System.err.println(RESULT);
 	:}
 	;
 
@@ -653,11 +658,12 @@ declaration ::=
 		RESULT = parent;
 	:}
 	| declaration_specifiers:ds error {:
-		System.err.println("Se esperaba ; en la declaracion " + ds);
 		TreeNode parent = new TreeNode(null, "declaration");
 		parent.addChild(ds);
 		parent.addChild("ERROR");
 		RESULT = parent;
+		System.err.println("Se esperaba ; en la declaracion:");
+		System.err.println(RESULT);
 	:}
 	;
 
@@ -1586,10 +1592,11 @@ external_declaration ::=
 		RESULT = parent;
 	:}
 	| error {:
-		System.err.println("No se esperaba este token");
 		TreeNode parent = new TreeNode(null, "external_declaration");
 		parent.addChild("ERROR");
 		RESULT = parent;
+		System.err.println("No se esperaba este token:");
+		System.err.println(RESULT);
 	:}
 	;
 

@@ -10,9 +10,9 @@ public class C_Compiler {
     public static void main(String[] args){
         // TODO code application logic here
         String[] files = {
-            "main.c",
-            "prueba.c",
-            "small.c"
+            "main",
+            "prueba",
+            "small"
         };
         //buildLexer();
         //buildParser();
@@ -20,6 +20,7 @@ public class C_Compiler {
             System.err.flush();
             System.out.println("\nCompilando Archivo " + file);
             runFile(file);
+            System.err.flush();
             System.out.println("---------------------------------------------------------------\n");
         }
     }
@@ -54,8 +55,9 @@ public class C_Compiler {
 
     public static void runFile(String file){
         try {
-            parser cupParser = new parser(new FileReader("test/"+file));
-            cupParser.parse();
+            parser cupParser = new parser(new FileReader("test/"+file +".c"));
+            TreeNode x = (TreeNode)cupParser.parse().value;
+            x.saveTreeToFile(file);
         } catch (FileNotFoundException ex) {
             Logger.getLogger(C_Compiler.class.getName()).log(Level.SEVERE, null, ex);
         } catch (Exception ex) {

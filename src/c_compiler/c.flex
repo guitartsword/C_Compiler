@@ -48,7 +48,7 @@ white_space = {new_line} | [ \t\f]
 "printf"		{ return symbol(sym.PRINTF,yytext()); }
 "scanf"			{ return symbol(sym.SCANF,yytext()); }
 "do"			{ return symbol(sym.DO,yytext()); }
-"bool"		{ return symbol(sym.BOOL,yytext()); }
+"bool"			{ return symbol(sym.BOOL,yytext()); }
 "double"		{ return symbol(sym.DOUBLE,yytext()); }
 "else"			{ return symbol(sym.ELSE,yytext()); }
 "enum"			{ return symbol(sym.ENUM,yytext()); }
@@ -73,52 +73,52 @@ white_space = {new_line} | [ \t\f]
 "void"			{ return symbol(sym.VOID,yytext()); }
 "volatile"		{ return symbol(sym.VOLATILE,yytext()); }
 "while"			{ return symbol(sym.WHILE,yytext()); }
-"..."			{ return symbol(sym.ELLIPSIS); }
-">>="			{ return symbol(sym.RIGHT_ASSIGN); }
-"<<="			{ return symbol(sym.LEFT_ASSIGN); }
-"+="			{ return symbol(sym.ADD_ASSIGN); }
-"-="			{ return symbol(sym.SUB_ASSIGN); }
-"*="			{ return symbol(sym.MUL_ASSIGN); }
-"/="			{ return symbol(sym.DIV_ASSIGN); }
-"%="			{ return symbol(sym.MOD_ASSIGN); }
-"&="			{ return symbol(sym.AND_ASSIGN); }
-"^="			{ return symbol(sym.XOR_ASSIGN); }
-"|="			{ return symbol(sym.OR_ASSIGN); }
-">>"			{ return symbol(sym.RIGHT_OP); }
-"<<"			{ return symbol(sym.LEFT_OP); }
+"..."			{ return symbol(sym.ELLIPSIS, yytext()); }
+">>="			{ return symbol(sym.RIGHT_ASSIGN, yytext()); }
+"<<="			{ return symbol(sym.LEFT_ASSIGN, yytext()); }
+"+="			{ return symbol(sym.ADD_ASSIGN, yytext()); }
+"-="			{ return symbol(sym.SUB_ASSIGN, yytext()); }
+"*="			{ return symbol(sym.MUL_ASSIGN, yytext()); }
+"/="			{ return symbol(sym.DIV_ASSIGN, yytext()); }
+"%="			{ return symbol(sym.MOD_ASSIGN, yytext()); }
+"&="			{ return symbol(sym.AND_ASSIGN, yytext()); }
+"^="			{ return symbol(sym.XOR_ASSIGN, yytext()); }
+"|="			{ return symbol(sym.OR_ASSIGN, yytext()); }
+">>"			{ return symbol(sym.RIGHT_OP, yytext()); }
+"<<"			{ return symbol(sym.LEFT_OP, yytext()); }
 "++"			{ return symbol(sym.INC_OP,"++"); }
 "--"			{ return symbol(sym.DEC_OP,"--"); }
-"->"			{ return symbol(sym.PTR_OP); }
+"->"			{ return symbol(sym.PTR_OP, yytext()); }
 "&&"			{ return symbol(sym.AND_OP,"&&"); }
 "||"			{ return symbol(sym.OR_OP,"||"); }
 "<="			{ return symbol(sym.LE_OP,"<="); }
 ">="			{ return symbol(sym.GE_OP,">="); }
 "=="			{ return symbol(sym.EQ_OP,"=="); }
 "!="			{ return symbol(sym.NE_OP,"!="); }
-";"			{ return symbol(sym.SEMI); }
-("{"|"<%")		{ return symbol(sym.CURLYL); }
-("}"|"%>")		{ return symbol(sym.CURLYR); }
-","			{ return symbol(sym.COMMA); }
-":"			{ return symbol(sym.COLON); }
-"="			{ return symbol(sym.ASSIGN); }
-"("			{ return symbol(sym.PARAL); }
-")"			{ return symbol(sym.PARAR); }
-("["|"<:")		{ return symbol(sym.SQUAREDL); }
-("]"|":>")		{ return symbol(sym.SQUAREDR); }
-"."			{ return symbol(sym.POINT); }
-"&"			{ return symbol(sym.ADRESS); }
+";"			{ return symbol(sym.SEMI, yytext()); }
+("{"|"<%")		{ return symbol(sym.CURLYL, yytext()); }
+("}"|"%>")		{ return symbol(sym.CURLYR, yytext()); }
+","			{ return symbol(sym.COMMA, yytext()); }
+":"			{ return symbol(sym.COLON, yytext()); }
+"="			{ return symbol(sym.ASSIGN, yytext()); }
+"("			{ return symbol(sym.PARAL,"("); }
+")"			{ return symbol(sym.PARAR, ")"); }
+("["|"<:")		{ return symbol(sym.SQUAREDL, yytext()); }
+("]"|":>")		{ return symbol(sym.SQUAREDR, yytext()); }
+"."			{ return symbol(sym.POINT, yytext()); }
+"&"			{ return symbol(sym.ADRESS, yytext()); }
 "!"			{ return symbol(sym.NOT,"!"); }
-"~"			{ return symbol(sym.TILDE); }
-"-"			{ return symbol(sym.MINUS); }
+"~"			{ return symbol(sym.TILDE, yytext()); }
+"-"			{ return symbol(sym.MINUS, yytext()); }
 "+"			{ return symbol(sym.PLUS,"+"); }
 "*"			{ return symbol(sym.MUL,"*"); }
 "/"			{ return symbol(sym.DIVIDE,"/"); }
 "%"			{ return symbol(sym.MODULUS,"%"); }
 "<"			{ return symbol(sym.LESS,"<"); }
 ">"			{ return symbol(sym.GREATER,">"); }
-"^"			{ return symbol(sym.XOR); }
-"|"			{ return symbol(sym.OR); }
-"?"			{ return symbol(sym.COND); }
+"^"			{ return symbol(sym.XOR, yytext()); }
+"|"			{ return symbol(sym.OR, yytext()); }
+"?"			{ return symbol(sym.COND, yytext()); }
 
 {Letter}({Letter}|{Digit})*		{ return symbol(sym.IDENTIFIER, yytext()); }
 0[xX]{H}+{IS}?		{ return symbol(sym.CONSTANT,yytext()); }
