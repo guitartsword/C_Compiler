@@ -31,471 +31,1594 @@ terminal BOOL, IDENTIFIER, CONSTANT, STRING_LITERAL, SIZEOF, PTR_OP, INC_OP, DEC
 		NOT, TILDE, MINUS, PLUS, MUL, DIVIDE, MODULUS, LESS, GREATER, XOR, OR, COND,
 		SCANF, PRINTF;
 
-non terminal translation_unit;
-non terminal primary_expression;
-non terminal postfix_expression;
-non terminal expression;
-non terminal assignment_expression;
-non terminal unary_expression;
-non terminal unary_operator;
-non terminal type_name;
-non terminal cast_expression;
-non terminal multiplicative_expression;
-non terminal additive_expression;
-non terminal relational_expression;
-non terminal shift_expression;
-non terminal equality_expression;
-non terminal and_expression;
-non terminal exclusive_or_expression;
-non terminal inclusive_or_expression;
-non terminal logical_and_expression;
-non terminal logical_or_expression;
-non terminal conditional_expression;
-non terminal constant_expression;
-non terminal declaration;
-non terminal declaration_specifiers;
-non terminal init_declarator_list;
-non terminal storage_class_specifier;
-non terminal type_specifier;
-non terminal type_qualifier;
-non terminal init_declarator;
-non terminal declarator;
-non terminal struct_or_union_specifier;
-non terminal struct_declaration_list;
-non terminal struct_declaration;
-non terminal initializer;
-non terminal specifier_qualifier_list;
-non terminal struct_declarator_list;
-non terminal struct_declarator;
-non terminal enum_specifier;
-non terminal enumerator_list;
-non terminal enumerator;
-non terminal pointer;
-non terminal direct_declarator;
-non terminal parameter_type_list;
-non terminal identifier_list;
-non terminal type_qualifier_list;
-non terminal parameter_declaration;
-non terminal abstract_declarator;
-non terminal direct_abstract_declarator;
-non terminal initializer_list;
-non terminal statement;
-non terminal labeled_statement;
-non terminal compound_statement;
-non terminal selection_statement;
-non terminal iteration_statement;
-non terminal jump_statement;
-non terminal expression_statement;
-non terminal external_declaration;
-non terminal function_definition;
-non terminal declaration_list;
-non terminal decl_stmnt_list;
-non terminal assignment_operator;
-non terminal parameter_list;
-non terminal S;
+non terminal TreeNode translation_unit;
+non terminal TreeNode primary_expression;
+non terminal TreeNode postfix_expression;
+non terminal TreeNode expression;
+non terminal TreeNode assignment_expression;
+non terminal TreeNode unary_expression;
+non terminal TreeNode unary_operator;
+non terminal TreeNode type_name;
+non terminal TreeNode cast_expression;
+non terminal TreeNode multiplicative_expression;
+non terminal TreeNode additive_expression;
+non terminal TreeNode relational_expression;
+non terminal TreeNode shift_expression;
+non terminal TreeNode equality_expression;
+non terminal TreeNode and_expression;
+non terminal TreeNode exclusive_or_expression;
+non terminal TreeNode inclusive_or_expression;
+non terminal TreeNode logical_and_expression;
+non terminal TreeNode logical_or_expression;
+non terminal TreeNode conditional_expression;
+non terminal TreeNode constant_expression;
+non terminal TreeNode declaration;
+non terminal TreeNode declaration_specifiers;
+non terminal TreeNode init_declarator_list;
+non terminal TreeNode storage_class_specifier;
+non terminal TreeNode type_specifier;
+non terminal TreeNode type_qualifier;
+non terminal TreeNode init_declarator;
+non terminal TreeNode declarator;
+non terminal TreeNode struct_or_union_specifier;
+non terminal TreeNode struct_declaration_list;
+non terminal TreeNode struct_declaration;
+non terminal TreeNode initializer;
+non terminal TreeNode specifier_qualifier_list;
+non terminal TreeNode struct_declarator_list;
+non terminal TreeNode struct_declarator;
+non terminal TreeNode enum_specifier;
+non terminal TreeNode enumerator_list;
+non terminal TreeNode enumerator;
+non terminal TreeNode pointer;
+non terminal TreeNode direct_declarator;
+non terminal TreeNode parameter_type_list;
+non terminal TreeNode identifier_list;
+non terminal TreeNode type_qualifier_list;
+non terminal TreeNode parameter_declaration;
+non terminal TreeNode abstract_declarator;
+non terminal TreeNode direct_abstract_declarator;
+non terminal TreeNode initializer_list;
+non terminal TreeNode statement;
+non terminal TreeNode labeled_statement;
+non terminal TreeNode compound_statement;
+non terminal TreeNode selection_statement;
+non terminal TreeNode iteration_statement;
+non terminal TreeNode jump_statement;
+non terminal TreeNode expression_statement;
+non terminal TreeNode external_declaration;
+non terminal TreeNode function_definition;
+non terminal TreeNode declaration_list;
+non terminal TreeNode decl_stmnt_list;
+non terminal TreeNode assignment_operator;
+non terminal TreeNode parameter_list;
+non terminal TreeNode S;
 
 precedence nonassoc ELSE;
 start with S;
 
 S ::=
-	translation_unit {:System.out.println("Analisis Sintactico Completado Exitosamente");:}
+	translation_unit:tu {:
+		System.out.println("Analisis Sintactico Completado Exitosamente");
+		TreeNode parent = new TreeNode(null, "S");
+		parent.addChild(tu);
+		parent.prettyPrint();
+	:}
 	;
 
 primary_expression ::=
-	IDENTIFIER:ident
-	| CONSTANT:constant
-	| STRING_LITERAL:stringliteral
-	| PARAL expression:e PARAR
+	IDENTIFIER:ident {:
+		TreeNode parent = new TreeNode(null, "primary_expression");
+		parent.addChild(ident);
+		RESULT = parent;
+	:}
+	| CONSTANT:constant {:
+		TreeNode parent = new TreeNode(null, "primary_expression");
+		parent.addChild(constant);
+		RESULT = parent;
+	:}
+	| STRING_LITERAL:stringliteral {:
+		TreeNode parent = new TreeNode(null, "primary_expression");
+		parent.addChild(stringliteral);
+		RESULT = parent;
+	:}
+	| PARAL:pl expression:e PARAR:pr {:
+		TreeNode parent = new TreeNode(null, "primary_expression");
+		parent.addChild(pl);
+		parent.addChild(e);
+		parent.addChild(pr);
+		RESULT = parent;
+	:}
 	;
 
 postfix_expression ::=
-	primary_expression:pe
-	| postfix_expression:pe SQUAREDL expression:index SQUAREDR
-	| postfix_expression:pe PARAL PARAR
-	| postfix_expression:pe PARAL expression:e PARAR
-	| PRINTF PARAL PARAR
-	| SCANF PARAL PARAR
-	| PRINTF PARAL expression PARAR
-	| SCANF PARAL expression PARAR
-	| postfix_expression:pe POINT IDENTIFIER:id
-	| postfix_expression:pe PTR_OP IDENTIFIER:id
-	| postfix_expression:pe INC_OP:op
-	| postfix_expression:pe DEC_OP:op
+	primary_expression:pe {:
+		TreeNode parent = new TreeNode(null, "postfix_expression");
+		parent.addChild(pe);
+		RESULT = parent;
+	:}
+	| postfix_expression:pe SQUAREDL:sl expression:index SQUAREDR:sd {:
+		TreeNode parent = new TreeNode(null, "postfix_expression");
+		parent.addChild(pe);
+		parent.addChild(sl);
+		parent.addChild(index);
+		parent.addChild(sd);
+		RESULT = parent;
+	:}
+	| postfix_expression:pe PARAL:pl PARAR:pr {:
+		TreeNode parent = new TreeNode(null, "postfix_expression");
+		parent.addChild(pe);
+		parent.addChild(pl);
+		parent.addChild(pr);
+		RESULT = parent;
+	:}
+	| postfix_expression:pe PARAL:pl expression:e PARAR:pr {:
+		TreeNode parent = new TreeNode(null, "postfix_expression");
+		parent.addChild(pe);
+		parent.addChild(pl);
+		parent.addChild(e);
+		parent.addChild(pr);
+		RESULT = parent;
+	:}
+	| PRINTF:pf PARAL:pl PARAR:pr {:
+		TreeNode parent = new TreeNode(null, "postfix_expression");
+		parent.addChild(pf);
+		parent.addChild(pl);
+		parent.addChild(pr);
+		RESULT = parent;
+	:}
+	| SCANF:sf PARAL:pl PARAR:pr {:
+		TreeNode parent = new TreeNode(null, "postfix_expression");
+		parent.addChild(sf);
+		parent.addChild(pl);
+		parent.addChild(pr);
+		RESULT = parent;
+	:}
+	| PRINTF:pf PARAL:pl expression:e PARAR:pr {:
+		TreeNode parent = new TreeNode(null, "postfix_expression");
+		parent.addChild(pf);
+		parent.addChild(pl);
+		parent.addChild(e);
+		parent.addChild(pr);
+		RESULT = parent;
+	:}
+	| SCANF:sf PARAL:pl expression:e PARAR:pr {:
+		TreeNode parent = new TreeNode(null, "postfix_expression");
+		parent.addChild(sf);
+		parent.addChild(pl);
+		parent.addChild(e);
+		parent.addChild(pr);
+		RESULT = parent;
+	:}
+	| postfix_expression:pe POINT IDENTIFIER:id {:
+		TreeNode parent = new TreeNode(null, "postfix_expression");
+		parent.addChild(pe);
+		parent.addChild(".");
+		parent.addChild(id);
+		RESULT = parent;
+	:}
+	| postfix_expression:pe PTR_OP IDENTIFIER:id {:
+		TreeNode parent = new TreeNode(null, "postfix_expression");
+		parent.addChild(pe);
+		parent.addChild("->");
+		parent.addChild(id);
+		RESULT = parent;
+	:}
+	| postfix_expression:pe INC_OP:op {:
+		TreeNode parent = new TreeNode(null, "postfix_expression");
+		parent.addChild(pe);
+		parent.addChild(op);
+		RESULT = parent;
+	:}
+	| postfix_expression:pe DEC_OP:op {:
+		TreeNode parent = new TreeNode(null, "postfix_expression");
+		parent.addChild(pe);
+		parent.addChild(op);
+		RESULT = parent;
+	:}
 	;
 
 unary_expression ::=
-	postfix_expression:pe
-	| INC_OP:op unary_expression:ue
-	| DEC_OP:op unary_expression:ue
-	| unary_operator:uo cast_expression:ce
-	| SIZEOF unary_expression:ue
-	| SIZEOF PARAL type_name:tn PARAR
+	postfix_expression:pe {:
+		TreeNode parent = new TreeNode(null, "unary_expression");
+		parent.addChild(pe);
+		RESULT = parent;
+	:}
+	| INC_OP:op unary_expression:ue {:
+		TreeNode parent = new TreeNode(null, "unary_expression");
+		parent.addChild(op);
+		parent.addChild(ue);
+		RESULT = parent;
+	:}
+	| DEC_OP:op unary_expression:ue {:
+		TreeNode parent = new TreeNode(null, "unary_expression");
+		parent.addChild(op);
+		parent.addChild(ue);
+		RESULT = parent;
+	:}
+	| unary_operator:uo cast_expression:ce {:
+		TreeNode parent = new TreeNode(null, "unary_expression");
+		parent.addChild(uo);
+		parent.addChild(ce);
+		RESULT = parent;
+	:}
+	| SIZEOF unary_expression:ue {:
+		TreeNode parent = new TreeNode(null, "unary_expression");
+		parent.addChild("sizeof");
+		parent.addChild(ue);
+		RESULT = parent;
+	:}
+	| SIZEOF PARAL type_name:tn PARAR {:
+		TreeNode parent = new TreeNode(null, "unary_expression");
+		parent.addChild("sizeof");
+		parent.addChild("(");
+		parent.addChild(tn);
+		parent.addChild(")");
+		RESULT = parent;
+	:}
 	;
 
 unary_operator ::=
-	ADRESS
-	| MUL:op
-	| PLUS:op
-	| MINUS:op
-	| TILDE
-	| NOT:op
+	ADRESS:op {:
+		TreeNode parent = new TreeNode(null, "unary_operator");
+		parent.addChild(op);
+		RESULT = parent;
+	:}
+	| MUL:op {:
+		TreeNode parent = new TreeNode(null, "unary_operator");
+		parent.addChild(op);
+		RESULT = parent;
+	:}
+	| PLUS:op {:
+		TreeNode parent = new TreeNode(null, "unary_operator");
+		parent.addChild(op);
+		RESULT = parent;
+	:}
+	| MINUS:op {:
+		TreeNode parent = new TreeNode(null, "unary_operator");
+		parent.addChild(op);
+		RESULT = parent;
+	:}
+	| TILDE:op {:
+		TreeNode parent = new TreeNode(null, "unary_operator");
+		parent.addChild(op);
+		RESULT = parent;
+	:}
+	| NOT:op {:
+		TreeNode parent = new TreeNode(null, "unary_operator");
+		parent.addChild(op);
+		RESULT = parent;
+	:}
 	;
 
 
 cast_expression ::=
-	unary_expression:ue
-	| PARAL type_name:tn PARAR cast_expression:ce
+	unary_expression:ue {:
+		TreeNode parent = new TreeNode(null, "cast_expression");
+		parent.addChild(ue);
+		RESULT = parent;
+	:}
+	| PARAL type_name:tn PARAR cast_expression:ce {:
+		TreeNode parent = new TreeNode(null, "cast_expression");
+		parent.addChild("(");
+		parent.addChild(tn);
+		parent.addChild(")");
+		parent.addChild(ce);
+		RESULT = parent;
+	:}
 	;
 
 
 multiplicative_expression ::=
-	cast_expression:ce
-	| multiplicative_expression:me MUL:op cast_expression:ce
-	| multiplicative_expression:me DIVIDE:op cast_expression:ce
-	| multiplicative_expression:me MODULUS:op cast_expression:ce
+	cast_expression:ce {:
+		TreeNode parent = new TreeNode(null, "multiplicative_expression");
+		parent.addChild(ce);
+		RESULT = parent;
+	:}
+	| multiplicative_expression:me MUL:op cast_expression:ce {:
+		TreeNode parent = new TreeNode(null, "multiplicative_expression");
+		parent.addChild(me);
+		parent.addChild(op);
+		parent.addChild(ce);
+		RESULT = parent;
+	:}
+	| multiplicative_expression:me DIVIDE:op cast_expression:ce {:
+		TreeNode parent = new TreeNode(null, "multiplicative_expression");
+		parent.addChild(me);
+		parent.addChild(op);
+		parent.addChild(ce);
+		RESULT = parent;
+	:}
+	| multiplicative_expression:me MODULUS:op cast_expression:ce {:
+		TreeNode parent = new TreeNode(null, "multiplicative_expression");
+		parent.addChild(me);
+		parent.addChild(op);
+		parent.addChild(ce);
+		RESULT = parent;
+	:}
 	;
 
 additive_expression ::=
-	multiplicative_expression:me
-	| additive_expression:ae PLUS:op multiplicative_expression:me
-	| additive_expression:ae MINUS:op multiplicative_expression:me
+	multiplicative_expression:me {:
+		TreeNode parent = new TreeNode(null, "additive_expression");
+		parent.addChild(me);
+		RESULT = parent;
+	:}
+	| additive_expression:ae PLUS:op multiplicative_expression:me {:
+		TreeNode parent = new TreeNode(null, "additive_expression");
+		parent.addChild(ae);
+		parent.addChild(op);
+		parent.addChild(me);
+		RESULT = parent;
+	:}
+	| additive_expression:ae MINUS:op multiplicative_expression:me {:
+		TreeNode parent = new TreeNode(null, "additive_expression");
+		parent.addChild(ae);
+		parent.addChild(op);
+		parent.addChild(me);
+		RESULT = parent;
+	:}
 	;
 
 shift_expression ::=
-	additive_expression:ae
-	| shift_expression:se LEFT_OP additive_expression:ae
-	| shift_expression:se RIGHT_OP additive_expression:ae
+	additive_expression:ae {:
+		TreeNode parent = new TreeNode(null, "shift_expression");
+		parent.addChild(ae);
+		RESULT = parent;
+	:}
+	| shift_expression:se LEFT_OP additive_expression:ae {:
+		TreeNode parent = new TreeNode(null, "shift_expression");
+		parent.addChild(se);
+		parent.addChild("<<");
+		parent.addChild(ae);
+		RESULT = parent;
+	:}
+	| shift_expression:se RIGHT_OP additive_expression:ae {:
+		TreeNode parent = new TreeNode(null, "shift_expression");
+		parent.addChild(se);
+		parent.addChild(">>");
+		parent.addChild(ae);
+		RESULT = parent;
+	:}
 	;
 
 relational_expression ::=
-	shift_expression:se
-	| relational_expression:re LESS:op shift_expression:se
-	| relational_expression:re GREATER:op shift_expression:se
-	| relational_expression:re LE_OP:op shift_expression:se
-	| relational_expression:re GE_OP:op shift_expression:se
+	shift_expression:se {:
+		TreeNode parent = new TreeNode(null, "relational_expression");
+		parent.addChild(se);
+		RESULT = parent;
+	:}
+	| relational_expression:re LESS:op shift_expression:se {:
+		TreeNode parent = new TreeNode(null, "relational_expression");
+		parent.addChild(re);
+		parent.addChild(op);
+		parent.addChild(se);
+		RESULT = parent;
+	:}
+	| relational_expression:re GREATER:op shift_expression:se {:
+		TreeNode parent = new TreeNode(null, "relational_expression");
+		parent.addChild(re);
+		parent.addChild(op);
+		parent.addChild(se);
+		RESULT = parent;
+	:}
+	| relational_expression:re LE_OP:op shift_expression:se {:
+		TreeNode parent = new TreeNode(null, "relational_expression");
+		parent.addChild(re);
+		parent.addChild(op);
+		parent.addChild(se);
+		RESULT = parent;
+	:}
+	| relational_expression:re GE_OP:op shift_expression:se {:
+		TreeNode parent = new TreeNode(null, "relational_expression");
+		parent.addChild(re);
+		parent.addChild(op);
+		parent.addChild(se);
+		RESULT = parent;
+	:}
 	;
 
 equality_expression ::=
-	relational_expression:re
-	| equality_expression:ee EQ_OP:op relational_expression:re
-	| equality_expression:ee NE_OP:op relational_expression:re
+	relational_expression:re {:
+		TreeNode parent = new TreeNode(null, "equality_expression");
+		parent.addChild(re);
+		RESULT = parent;
+	:}
+	| equality_expression:ee EQ_OP:op relational_expression:re {:
+		TreeNode parent = new TreeNode(null, "equality_expression");
+		parent.addChild(ee);
+		parent.addChild(op);
+		parent.addChild(re);
+		RESULT = parent;
+	:}
+	| equality_expression:ee NE_OP:op relational_expression:re {:
+		TreeNode parent = new TreeNode(null, "equality_expression");
+		parent.addChild(ee);
+		parent.addChild(op);
+		parent.addChild(re);
+		RESULT = parent;
+	:}
 	;
 
 and_expression ::=
-	equality_expression:ee
-	| and_expression:ae ADRESS equality_expression:ee
+	equality_expression:ee {:
+		TreeNode parent = new TreeNode(null, "and_expression");
+		parent.addChild(ee);
+		RESULT = parent;
+	:}
+	| and_expression:ae ADRESS:a equality_expression:ee {:
+		TreeNode parent = new TreeNode(null, "and_expression");
+		parent.addChild(ae);
+		parent.addChild(a);
+		parent.addChild(ee);
+		RESULT = parent;
+	:}
 	;
 
 exclusive_or_expression	::=
-	and_expression:ae
-	| exclusive_or_expression:eoe XOR and_expression:ae
+	and_expression:ae {:
+		TreeNode parent = new TreeNode(null, "and_expression");
+		parent.addChild(ae);
+		RESULT = parent;
+	:}
+	| exclusive_or_expression:eoe XOR and_expression:ae {:
+		TreeNode parent = new TreeNode(null, "and_expression");
+		parent.addChild(eoe);
+		parent.addChild("^");
+		parent.addChild(ae);
+		RESULT = parent;
+	:}
 	;
 
 
 inclusive_or_expression	::=
-	exclusive_or_expression:eoe
-	| inclusive_or_expression:ioe OR exclusive_or_expression:eoe
+	exclusive_or_expression:eoe {:
+		TreeNode parent = new TreeNode(null, "inclusive_or_expression");
+		parent.addChild(eoe);
+		RESULT = parent;
+	:}
+	| inclusive_or_expression:ioe OR exclusive_or_expression:eoe {:
+		TreeNode parent = new TreeNode(null, "inclusive_or_expression");
+		parent.addChild(ioe);
+		parent.addChild("|");
+		parent.addChild(eoe);
+		RESULT = parent;
+	:}
 	;
 
 logical_and_expression ::=
-	inclusive_or_expression:ioe
-	| logical_and_expression:lae AND_OP:op inclusive_or_expression:ioe
+	inclusive_or_expression:ioe {:
+		TreeNode parent = new TreeNode(null, "logical_and_expression");
+		parent.addChild(ioe);
+		RESULT = parent;
+	:}
+	| logical_and_expression:lae AND_OP:op inclusive_or_expression:ioe {:
+		TreeNode parent = new TreeNode(null, "logical_and_expression");
+		parent.addChild(lae);
+		parent.addChild("&&");
+		parent.addChild(ioe);
+		RESULT = parent;
+	:}
 	;
 
 logical_or_expression ::=
-	logical_and_expression:lae
-	| logical_or_expression:loe OR_OP:op logical_and_expression:lae
+	logical_and_expression:lae {:
+		TreeNode parent = new TreeNode(null, "logical_or_expression");
+		parent.addChild(lae);
+		RESULT = parent;
+	:}
+	| logical_or_expression:loe OR_OP:op logical_and_expression:lae {:
+		TreeNode parent = new TreeNode(null, "logical_or_expression");
+		parent.addChild(loe);
+		parent.addChild("||");
+		parent.addChild(lae);
+		RESULT = parent;
+	:}
 	;
 
 conditional_expression ::=
-	logical_or_expression:loe
-	| logical_or_expression:loe COND expression:e COLON conditional_expression:ce
+	logical_or_expression:loe {:
+		TreeNode parent = new TreeNode(null, "conditional_expression");
+		parent.addChild(loe);
+		RESULT = parent;
+	:}
+	| logical_or_expression:loe COND expression:e COLON conditional_expression:ce {:
+		TreeNode parent = new TreeNode(null, "conditional_expression");
+		parent.addChild(loe);
+		parent.addChild("?");
+		parent.addChild(e);
+		parent.addChild(":");
+		parent.addChild(ce);
+		RESULT = parent;
+	:}
 	;
 
 assignment_expression ::=
-	conditional_expression:ce
-	| unary_expression:ue assignment_operator:aop assignment_expression:ae
-	| error assignment_operator assignment_expression {:System.err.println("Asignacion solo a identificadores");:}
+	conditional_expression:ce {:
+		TreeNode parent = new TreeNode(null, "assignment_expression");
+		parent.addChild(ce);
+		RESULT = parent;
+	:}
+	| unary_expression:ue assignment_operator:aop assignment_expression:ae {:
+		TreeNode parent = new TreeNode(null, "assignment_expression");
+		parent.addChild(ue);
+		parent.addChild(aop);
+		parent.addChild(ae);
+		RESULT = parent;
+	:}
+	| error assignment_operator:aop assignment_expression:ae {:
+		System.err.println("Asignacion solo a identificadores");
+		TreeNode parent = new TreeNode(null, "assignment_expression");
+		parent.addChild("ERROR");
+		parent.addChild(aop);
+		parent.addChild(ae);
+		RESULT = parent;
+	:}
 	;
 
 assignment_operator ::=
-	ASSIGN
-	| MUL_ASSIGN
-	| DIV_ASSIGN
-	| MOD_ASSIGN
-	| ADD_ASSIGN
-	| SUB_ASSIGN
-	| LEFT_ASSIGN
-	| RIGHT_ASSIGN
-	| AND_ASSIGN
-	| XOR_ASSIGN
-	| OR_ASSIGN
+	ASSIGN {:
+		TreeNode parent = new TreeNode(null, "assignment_operator");
+		parent.addChild("=");
+		RESULT = parent;
+	:}
+	| MUL_ASSIGN {:
+		TreeNode parent = new TreeNode(null, "assignment_operator");
+		parent.addChild("*=");
+		RESULT = parent;
+	:}
+	| DIV_ASSIGN {:
+		TreeNode parent = new TreeNode(null, "assignment_operator");
+		parent.addChild("/=");
+		RESULT = parent;
+	:}
+	| MOD_ASSIGN {:
+		TreeNode parent = new TreeNode(null, "assignment_operator");
+		parent.addChild("%=");
+		RESULT = parent;
+	:}
+	| ADD_ASSIGN {:
+		TreeNode parent = new TreeNode(null, "assignment_operator");
+		parent.addChild("+=");
+		RESULT = parent;
+	:}
+	| SUB_ASSIGN {:
+		TreeNode parent = new TreeNode(null, "assignment_operator");
+		parent.addChild("-=");
+		RESULT = parent;
+	:}
+	| LEFT_ASSIGN {:
+		TreeNode parent = new TreeNode(null, "assignment_operator");
+		parent.addChild("<<=");
+		RESULT = parent;
+	:}
+	| RIGHT_ASSIGN {:
+		TreeNode parent = new TreeNode(null, "assignment_operator");
+		parent.addChild(">>=");
+		RESULT = parent;
+	:}
+	| AND_ASSIGN {:
+		TreeNode parent = new TreeNode(null, "assignment_operator");
+		parent.addChild("&=");
+		RESULT = parent;
+	:}
+	| XOR_ASSIGN {:
+		TreeNode parent = new TreeNode(null, "assignment_operator");
+		parent.addChild("^=");
+		RESULT = parent;
+	:}
+	| OR_ASSIGN {:
+		TreeNode parent = new TreeNode(null, "assignment_operator");
+		parent.addChild("|=");
+		RESULT = parent;
+	:}
 	;
 
 expression ::=
-	assignment_expression:ae
-	| expression:e COMMA assignment_expression:ae
+	assignment_expression:ae {:
+		TreeNode parent = new TreeNode(null, "expression");
+		parent.addChild(ae);
+		RESULT = parent;
+	:}
+	| expression:e COMMA assignment_expression:ae {:
+		TreeNode parent = new TreeNode(null, "expression");
+		parent.addChild(e);
+		parent.addChild(",");
+		parent.addChild(ae);
+		RESULT = parent;
+	:}
 	;
 
 constant_expression ::=
-	conditional_expression:ce
+	conditional_expression:ce {:
+		TreeNode parent = new TreeNode(null, "constant_expression");
+		parent.addChild(ce);
+		RESULT = parent;
+	:}
 	;
 
 declaration ::=
-	declaration_specifiers:ds SEMI
-	| declaration_specifiers:ds init_declarator_list:idl SEMI
-	| declaration_specifiers:ds error {:System.err.println("Se esperaba ; en la declaracion " + ds);:}
+	declaration_specifiers:ds SEMI {:
+		TreeNode parent = new TreeNode(null, "declaration");
+		parent.addChild(ds);
+		parent.addChild(";");
+		RESULT = parent;
+	:}
+	| declaration_specifiers:ds init_declarator_list:idl SEMI {:
+		TreeNode parent = new TreeNode(null, "declaration");
+		parent.addChild(ds);
+		parent.addChild(idl);
+		parent.addChild(";");
+		RESULT = parent;
+	:}
+	| declaration_specifiers:ds error {:
+		System.err.println("Se esperaba ; en la declaracion " + ds);
+		TreeNode parent = new TreeNode(null, "declaration");
+		parent.addChild(ds);
+		parent.addChild("ERROR");
+		RESULT = parent;
+	:}
 	;
 
 declaration_specifiers ::=
-	storage_class_specifier:scc
-	| storage_class_specifier:scc declaration_specifiers:ds
-	| type_specifier:ts {:RESULT = ts;:}
-	| type_specifier:ts declaration_specifiers:ds {:RESULT = ts;:}
-	| type_qualifier:tq
-	| type_qualifier:tq declaration_specifiers:ds
+	storage_class_specifier:scc {:
+		TreeNode parent = new TreeNode(null, "declaration_specifiers");
+		parent.addChild(scc);
+		RESULT = parent;
+	:}
+	| storage_class_specifier:scc declaration_specifiers:ds {:
+		TreeNode parent = new TreeNode(null, "declaration_specifiers");
+		parent.addChild(scc);
+		parent.addChild(ds);
+		RESULT = parent;
+	:}
+	| type_specifier:ts {:
+		TreeNode parent = new TreeNode(null, "declaration_specifiers");
+		parent.addChild(ts);
+		RESULT = parent;
+	:}
+	| type_specifier:ts declaration_specifiers:ds {:
+		TreeNode parent = new TreeNode(null, "declaration_specifiers");
+		parent.addChild(ts);
+		parent.addChild(ds);
+		RESULT = parent;
+	:}
+	| type_qualifier:tq {:
+		TreeNode parent = new TreeNode(null, "declaration_specifiers");
+		parent.addChild(tq);
+		RESULT = parent;
+	:}
+	| type_qualifier:tq declaration_specifiers:ds {:
+		TreeNode parent = new TreeNode(null, "declaration_specifiers");
+		parent.addChild(tq);
+		parent.addChild(ds);
+		RESULT = parent;
+	:}
 	;
 
 init_declarator_list ::=
-	init_declarator:id
-	| init_declarator_list:idl COMMA init_declarator:id
+	init_declarator:id {:
+		TreeNode parent = new TreeNode(null, "init_declarator_list");
+		parent.addChild(id);
+		RESULT = parent;
+	:}
+	| init_declarator_list:idl COMMA init_declarator:id {:
+		TreeNode parent = new TreeNode(null, "init_declarator_list");
+		parent.addChild(idl);
+		parent.addChild(",");
+		parent.addChild(id);
+		RESULT = parent;
+	:}
 	;
 
 init_declarator ::=
-	declarator:d
-	| declarator:d ASSIGN initializer:i
+	declarator:d {:
+		TreeNode parent = new TreeNode(null, "init_declarator");
+		parent.addChild(d);
+		RESULT = parent;
+	:}
+	| declarator:d ASSIGN initializer:i {:
+		TreeNode parent = new TreeNode(null, "init_declarator");
+		parent.addChild(d);
+		parent.addChild("=");
+		parent.addChild(i);
+		RESULT = parent;
+	:}
 	;
 
 storage_class_specifier ::=
-	TYPEDEF:id
-	| EXTERN:id
-	| STATIC:id
-	| AUTO:id
-	| REGISTER:id
+	TYPEDEF:id {:
+		TreeNode parent = new TreeNode(null, "storage_class_specifier");
+		parent.addChild(id);
+		RESULT = parent;
+	:}
+	| EXTERN:id {:
+		TreeNode parent = new TreeNode(null, "storage_class_specifier");
+		parent.addChild(id);
+		RESULT = parent;
+	:}
+	| STATIC:id {:
+		TreeNode parent = new TreeNode(null, "storage_class_specifier");
+		parent.addChild(id);
+		RESULT = parent;
+	:}
+	| AUTO:id {:
+		TreeNode parent = new TreeNode(null, "storage_class_specifier");
+		parent.addChild(id);
+		RESULT = parent;
+	:}
+	| REGISTER:id {:
+		TreeNode parent = new TreeNode(null, "storage_class_specifier");
+		parent.addChild(id);
+		RESULT = parent;
+	:}
 	;
 
 type_specifier ::=
-	VOID:type {:RESULT = type;:}
-	| CHAR:type {:RESULT = type;:}
-	| SHORT:type {:RESULT = type;:}
-	| INT:type {:RESULT = type;:}
-	| LONG:type {:RESULT = type;:}
-	| FLOAT:type {:RESULT = type;:}
-	| DOUBLE:type {:RESULT = type;:}
-	| BOOL:type {:RESULT = type;:}
-	| SIGNED:type {:RESULT = type;:}
-	| UNSIGNED:type {:RESULT = type;:}
-	| struct_or_union_specifier:su
-	| enum_specifier:es
-	| TYPE_NAME:type {:RESULT = type;:}
+	VOID:type {:
+		TreeNode parent = new TreeNode(null, "type_specifier");
+		parent.addChild(type);
+		RESULT = parent;
+	:}
+	| CHAR:type {:
+		TreeNode parent = new TreeNode(null, "type_specifier");
+		parent.addChild(type);
+		RESULT = parent;
+	:}
+	| SHORT:type {:
+		TreeNode parent = new TreeNode(null, "type_specifier");
+		parent.addChild(type);
+		RESULT = parent;
+	:}
+	| INT:type {:
+		TreeNode parent = new TreeNode(null, "type_specifier");
+		parent.addChild(type);
+		RESULT = parent;
+	:}
+	| LONG:type {:
+		TreeNode parent = new TreeNode(null, "type_specifier");
+		parent.addChild(type);
+		RESULT = parent;
+	:}
+	| FLOAT:type {:
+		TreeNode parent = new TreeNode(null, "type_specifier");
+		parent.addChild(type);
+		RESULT = parent;
+	:}
+	| DOUBLE:type {:
+		TreeNode parent = new TreeNode(null, "type_specifier");
+		parent.addChild(type);
+		RESULT = parent;
+	:}
+	| BOOL:type {:
+		TreeNode parent = new TreeNode(null, "type_specifier");
+		parent.addChild(type);
+		RESULT = parent;
+	:}
+	| SIGNED:type {:
+		TreeNode parent = new TreeNode(null, "type_specifier");
+		parent.addChild(type);
+		RESULT = parent;
+	:}
+	| UNSIGNED:type {:
+		TreeNode parent = new TreeNode(null, "type_specifier");
+		parent.addChild(type);
+		RESULT = parent;
+	:}
+	| struct_or_union_specifier:type {:
+		TreeNode parent = new TreeNode(null, "type_specifier");
+		parent.addChild(type);
+		RESULT = parent;
+	:}
+	| enum_specifier:type {:
+		TreeNode parent = new TreeNode(null, "type_specifier");
+		parent.addChild(type);
+		RESULT = parent;
+	:}
+	| TYPE_NAME:type {:
+		TreeNode parent = new TreeNode(null, "type_specifier");
+		parent.addChild(type);
+		RESULT = parent;
+	:}
 	;
 
 struct_or_union_specifier ::=
-	STRUCT:s IDENTIFIER:id CURLYL struct_declaration_list:sdl CURLYR
-	| STRUCT:s CURLYL struct_declaration_list:sdl CURLYR
-	| STRUCT:s IDENTIFIER:id
-	| UNION:u IDENTIFIER:id CURLYL struct_declaration_list:sdl CURLYR
-	| UNION:u CURLYL struct_declaration_list:sdl CURLYR
-	| UNION:u IDENTIFIER:id
+	STRUCT:s IDENTIFIER:id CURLYL struct_declaration_list:sdl CURLYR {:
+		TreeNode parent = new TreeNode(null, "struct_or_union_specifier");
+		parent.addChild(s);
+		parent.addChild(id);
+		parent.addChild("{");
+		parent.addChild(sdl);
+		parent.addChild("}");
+		RESULT = parent;
+	:}
+	| STRUCT:s CURLYL struct_declaration_list:sdl CURLYR {:
+		TreeNode parent = new TreeNode(null, "struct_or_union_specifier");
+		parent.addChild(s);
+		parent.addChild("{");
+		parent.addChild(sdl);
+		parent.addChild("}");
+		RESULT = parent;
+	:}
+	| STRUCT:s IDENTIFIER:id {:
+		TreeNode parent = new TreeNode(null, "struct_or_union_specifier");
+		parent.addChild(s);
+		parent.addChild(id);
+		RESULT = parent;
+	:}
+	| UNION:u IDENTIFIER:id CURLYL struct_declaration_list:sdl CURLYR {:
+		TreeNode parent = new TreeNode(null, "struct_or_union_specifier");
+		parent.addChild(u);
+		parent.addChild(id);
+		parent.addChild("{");
+		parent.addChild(sdl);
+		parent.addChild("}");
+		RESULT = parent;
+	:}
+	| UNION:u CURLYL struct_declaration_list:sdl CURLYR {:
+		TreeNode parent = new TreeNode(null, "struct_or_union_specifier");
+		parent.addChild(u);
+		parent.addChild("{");
+		parent.addChild(sdl);
+		parent.addChild("}");
+		RESULT = parent;
+	:}
+	| UNION:u IDENTIFIER:id {:
+		TreeNode parent = new TreeNode(null, "struct_or_union_specifier");
+		parent.addChild(u);
+		parent.addChild(id);
+		RESULT = parent;
+	:}
 	;
 
 struct_declaration_list ::=
-	struct_declaration:s
-	| struct_declaration_list:sl struct_declaration:s
+	struct_declaration:s {:
+		TreeNode parent = new TreeNode(null, "struct_declaration_list");
+		parent.addChild(s);
+		RESULT = parent;
+	:}
+	| struct_declaration_list:sl struct_declaration:s {:
+		TreeNode parent = new TreeNode(null, "struct_declaration_list");
+		parent.addChild(sl);
+		parent.addChild(s);
+		RESULT = parent;
+	:}
 	;
 
 struct_declaration ::=
-	specifier_qualifier_list:sq struct_declarator_list:sd SEMI
+	specifier_qualifier_list:sq struct_declarator_list:sd SEMI {:
+		TreeNode parent = new TreeNode(null, "struct_declaration");
+		parent.addChild(sq);
+		parent.addChild(sd);
+		parent.addChild(";");
+		RESULT = parent;
+	:}
 	;
 
 specifier_qualifier_list ::=
-	type_specifier:ts specifier_qualifier_list:sq
-	| type_specifier:ts
-	| type_qualifier:tq specifier_qualifier_list:sq
-	| type_qualifier:tq
+	type_specifier:ts specifier_qualifier_list:sq {:
+		TreeNode parent = new TreeNode(null, "specifier_qualifier_list");
+		parent.addChild(ts);
+		parent.addChild(sq);
+		RESULT = parent;
+	:}
+	| type_specifier:ts {:
+		TreeNode parent = new TreeNode(null, "specifier_qualifier_list");
+		parent.addChild(ts);
+		RESULT = parent;
+	:}
+	| type_qualifier:tq specifier_qualifier_list:sq {:
+		TreeNode parent = new TreeNode(null, "specifier_qualifier_list");
+		parent.addChild(tq);
+		parent.addChild(sq);
+		RESULT = parent;
+	:}
+	| type_qualifier:tq {:
+		TreeNode parent = new TreeNode(null, "specifier_qualifier_list");
+		parent.addChild(tq);
+		RESULT = parent;
+	:}
 	;
 
 struct_declarator_list ::=
-	struct_declarator:s
-	| struct_declarator_list:sl COMMA struct_declarator:s
+	struct_declarator:s {:
+		TreeNode parent = new TreeNode(null, "struct_declarator_list");
+		parent.addChild(s);
+		RESULT = parent;
+	:}
+	| struct_declarator_list:sl COMMA struct_declarator:s {:
+		TreeNode parent = new TreeNode(null, "struct_declarator_list");
+		parent.addChild(sl);
+		parent.addChild(",");
+		parent.addChild(s);
+		RESULT = parent;
+	:}
 	;
 
 struct_declarator ::=
-	declarator:d
-	| COLON constant_expression:ce
-	| declarator:d COLON constant_expression:ce
+	declarator:d {:
+		TreeNode parent = new TreeNode(null, "struct_declarator");
+		parent.addChild(d);
+		RESULT = parent;
+	:}
+	| COLON constant_expression:ce {:
+		TreeNode parent = new TreeNode(null, "struct_declarator");
+		parent.addChild(":");
+		parent.addChild(ce);
+		RESULT = parent;
+	:}
+	| declarator:d COLON constant_expression:ce {:
+		TreeNode parent = new TreeNode(null, "struct_declarator");
+		parent.addChild(d);
+		parent.addChild(":");
+		parent.addChild(ce);
+		RESULT = parent;
+	:}
 	;
 
 enum_specifier ::=
-	ENUM CURLYL enumerator_list:el CURLYR
-	| ENUM IDENTIFIER:id CURLYL enumerator_list:el CURLYR
-	| ENUM IDENTIFIER:id
+	ENUM CURLYL enumerator_list:el CURLYR {:
+		TreeNode parent = new TreeNode(null, "enum_specifier");
+		parent.addChild("enum");
+		parent.addChild("{");
+		parent.addChild(el);
+		parent.addChild("}");
+		RESULT = parent;
+	:}
+	| ENUM IDENTIFIER:id CURLYL enumerator_list:el CURLYR {:
+		TreeNode parent = new TreeNode(null, "enum_specifier");
+		parent.addChild("enum");
+		parent.addChild(id);
+		parent.addChild("{");
+		parent.addChild(el);
+		parent.addChild("}");
+		RESULT = parent;
+	:}
+	| ENUM IDENTIFIER:id {:
+		TreeNode parent = new TreeNode(null, "enum_specifier");
+		parent.addChild("enum");
+		parent.addChild(id);
+		RESULT = parent;
+	:}
 	;
 
 enumerator_list ::=
-	enumerator:e
-	| enumerator_list:el COMMA enumerator:e
+	enumerator:e {:
+		TreeNode parent = new TreeNode(null, "enumerator_list");
+		parent.addChild(e);
+		RESULT = parent;
+	:}
+	| enumerator_list:el COMMA enumerator:e {:
+		TreeNode parent = new TreeNode(null, "enumerator_list");
+		parent.addChild(el);
+		parent.addChild(",");
+		parent.addChild(e);
+		RESULT = parent;
+	:}
 	;
 
 enumerator ::=
-	IDENTIFIER:id
-	| IDENTIFIER:id ASSIGN constant_expression:ce
+	IDENTIFIER:id {:
+		TreeNode parent = new TreeNode(null, "enumerator");
+		parent.addChild(id);
+		RESULT = parent;
+	:}
+	| IDENTIFIER:id ASSIGN constant_expression:ce {:
+		TreeNode parent = new TreeNode(null, "enumerator");
+		parent.addChild(id);
+		parent.addChild("=");
+		parent.addChild(ce);
+		RESULT = parent;
+	:}
 	;
 
 type_qualifier ::=
-	CONST:id
-	| VOLATILE:id
+	CONST:id {:
+		TreeNode parent = new TreeNode(null, "type_qualifier");
+		parent.addChild(id);
+		RESULT = parent;
+	:}
+	| VOLATILE:id {:
+		TreeNode parent = new TreeNode(null, "type_qualifier");
+		parent.addChild(id);
+		RESULT = parent;
+	:}
 	;
 
 declarator ::=
-	pointer:p direct_declarator:direct
-	| direct_declarator:direct
+	pointer:p direct_declarator:direct {:
+		TreeNode parent = new TreeNode(null, "declarator");
+		parent.addChild(p);
+		parent.addChild(direct);
+		RESULT = parent;
+	:}
+	| direct_declarator:direct {:
+		TreeNode parent = new TreeNode(null, "declarator");
+		parent.addChild(direct);
+		RESULT = parent;
+	:}
 	;
 
 direct_declarator ::=
-	IDENTIFIER:identifier
-	| PARAL declarator:d PARAR
-	| direct_declarator:dd SQUAREDL constant_expression:ce SQUAREDR
-	| direct_declarator:dd SQUAREDL SQUAREDR
-	| direct_declarator:dd PARAL parameter_type_list:ptl PARAR
-	| direct_declarator:dd PARAL identifier_list:il PARAR
-	| direct_declarator:dd PARAL PARAR
+	IDENTIFIER:identifier {:
+		TreeNode parent = new TreeNode(null, "direct_declarator");
+		parent.addChild(identifier);
+		RESULT = parent;
+	:}
+	| PARAL declarator:d PARAR {:
+		TreeNode parent = new TreeNode(null, "direct_declarator");
+		parent.addChild("(");
+		parent.addChild(d);
+		parent.addChild(")");
+		RESULT = parent;
+	:}
+	| direct_declarator:dd SQUAREDL constant_expression:ce SQUAREDR {:
+		TreeNode parent = new TreeNode(null, "direct_declarator");
+		parent.addChild(dd);
+		parent.addChild("[");
+		parent.addChild(ce);
+		parent.addChild("]");
+		RESULT = parent;
+	:}
+	| direct_declarator:dd SQUAREDL SQUAREDR {:
+		TreeNode parent = new TreeNode(null, "direct_declarator");
+		parent.addChild(dd);
+		parent.addChild("[");
+		parent.addChild("]");
+		RESULT = parent;
+	:}
+	| direct_declarator:dd PARAL parameter_type_list:ptl PARAR {:
+		TreeNode parent = new TreeNode(null, "direct_declarator");
+		parent.addChild(dd);
+		parent.addChild("(");
+		parent.addChild(ptl);
+		parent.addChild(")");
+		RESULT = parent;
+	:}
+	| direct_declarator:dd PARAL identifier_list:il PARAR {:
+		TreeNode parent = new TreeNode(null, "direct_declarator");
+		parent.addChild(dd);
+		parent.addChild("(");
+		parent.addChild(il);
+		parent.addChild(")");
+		RESULT = parent;
+	:}
+	| direct_declarator:dd PARAL PARAR {:
+		TreeNode parent = new TreeNode(null, "direct_declarator");
+		parent.addChild(dd);
+		parent.addChild("(");
+		parent.addChild(")");
+		RESULT = parent;
+	:}
 	;
 
 pointer ::=
-	MUL:id
-	| MUL:id type_qualifier_list:tql
-	| MUL:id pointer:p
-	| MUL:id type_qualifier_list:tql pointer:p
+	MUL:id {:
+		TreeNode parent = new TreeNode(null, "pointer");
+		parent.addChild(id);
+		RESULT = parent;
+	:}
+	| MUL:id type_qualifier_list:tql {:
+		TreeNode parent = new TreeNode(null, "pointer");
+		parent.addChild(id);
+		parent.addChild(tql);
+		RESULT = parent;
+	:}
+	| MUL:id pointer:p {:
+		TreeNode parent = new TreeNode(null, "pointer");
+		parent.addChild(id);
+		parent.addChild(p);
+		RESULT = parent;
+	:}
+	| MUL:id type_qualifier_list:tql pointer:p {:
+		TreeNode parent = new TreeNode(null, "pointer");
+		parent.addChild(id);
+		parent.addChild(tql);
+		parent.addChild(p);
+		RESULT = parent;
+	:}
 	;
 
 type_qualifier_list ::=
-	type_qualifier:tq
-	| type_qualifier_list:tql type_qualifier:tq
+	type_qualifier:tq {:
+		TreeNode parent = new TreeNode(null, "type_qualifier_list");
+		parent.addChild(tq);
+		RESULT = parent;
+	:}
+	| type_qualifier_list:tql type_qualifier:tq {:
+		TreeNode parent = new TreeNode(null, "type_qualifier_list");
+		parent.addChild(tql);
+		parent.addChild(tq);
+		RESULT = parent;
+	:}
 	;
 
 
 parameter_type_list ::=
-	parameter_list:pl
-	| parameter_list:pl COMMA ELLIPSIS:id
+	parameter_list:pl {:
+		TreeNode parent = new TreeNode(null, "parameter_type_list");
+		parent.addChild(pl);
+		RESULT = parent;
+	:}
+	| parameter_list:pl COMMA ELLIPSIS:id {:
+		TreeNode parent = new TreeNode(null, "parameter_type_list");
+		parent.addChild(pl);
+		parent.addChild(",");
+		parent.addChild(id);
+		RESULT = parent;
+	:}
 	;
 
 parameter_list ::=
-	parameter_declaration:pd
-	| parameter_list:pl COMMA parameter_declaration:pd
+	parameter_declaration:pd {:
+		TreeNode parent = new TreeNode(null, "parameter_list");
+		parent.addChild(pd);
+		RESULT = parent;
+	:}
+	| parameter_list:pl COMMA parameter_declaration:pd {:
+		TreeNode parent = new TreeNode(null, "parameter_list");
+		parent.addChild(pl);
+		parent.addChild(",");
+		parent.addChild(pd);
+		RESULT = parent;
+	:}
 	;
 
 parameter_declaration	::=
-	declaration_specifiers:ds declarator:d
-	| declaration_specifiers:ds abstract_declarator:ad
-	| declaration_specifiers:ds
+	declaration_specifiers:ds declarator:d {:
+		TreeNode parent = new TreeNode(null, "parameter_declaration");
+		parent.addChild(ds);
+		parent.addChild(d);
+		RESULT = parent;
+	:}
+	| declaration_specifiers:ds abstract_declarator:ad {:
+		TreeNode parent = new TreeNode(null, "parameter_declaration");
+		parent.addChild(ds);
+		parent.addChild(ad);
+		RESULT = parent;
+	:}
+	| declaration_specifiers:ds {:
+		TreeNode parent = new TreeNode(null, "parameter_declaration");
+		parent.addChild(ds);
+		RESULT = parent;
+	:}
 	;
 
 identifier_list	::=
-	IDENTIFIER:id
-	| identifier_list:idl COMMA IDENTIFIER:id
+	IDENTIFIER:id {:
+		TreeNode parent = new TreeNode(null, "identifier_list");
+		parent.addChild(id);
+		RESULT = parent;
+	:}
+	| identifier_list:idl COMMA IDENTIFIER:id {:
+		TreeNode parent = new TreeNode(null, "identifier_list");
+		parent.addChild(idl);
+		parent.addChild(",");
+		parent.addChild(id);
+		RESULT = parent;
+	:}
 	;
 
 type_name	::=
-	specifier_qualifier_list:sl
-	| specifier_qualifier_list:sl abstract_declarator:ad
+	specifier_qualifier_list:sl {:
+		TreeNode parent = new TreeNode(null, "type_name");
+		parent.addChild(sl);
+		RESULT = parent;
+	:}
+	| specifier_qualifier_list:sl abstract_declarator:ad {:
+		TreeNode parent = new TreeNode(null, "type_name");
+		parent.addChild(sl);
+		parent.addChild(ad);
+		RESULT = parent;
+	:}
 	;
 
 abstract_declarator	::=
-	pointer:p
-	| direct_abstract_declarator:dad
-	| pointer:p direct_abstract_declarator:d
+	pointer:p {:
+		TreeNode parent = new TreeNode(null, "abstract_declarator");
+		parent.addChild(p);
+		RESULT = parent;
+	:}
+	| direct_abstract_declarator:dad {:
+		TreeNode parent = new TreeNode(null, "abstract_declarator");
+		parent.addChild(dad);
+		RESULT = parent;
+	:}
+	| pointer:p direct_abstract_declarator:d {:
+		TreeNode parent = new TreeNode(null, "abstract_declarator");
+		parent.addChild(p);
+		parent.addChild(d);
+		RESULT = parent;
+	:}
 	;
 
 direct_abstract_declarator ::=
-	PARAL:id abstract_declarator:ad PARAR
-	| SQUAREDL:id SQUAREDR
-	| SQUAREDL:id constant_expression:ce SQUAREDR
-	| direct_abstract_declarator:dad SQUAREDL:id SQUAREDR
-	| direct_abstract_declarator:dad SQUAREDL:id constant_expression:ce SQUAREDR
-	| PARAL:id PARAR
-	| PARAL:id parameter_type_list:ptl PARAR
-	| direct_abstract_declarator:dad PARAL:id PARAR
-	| direct_abstract_declarator:dad PARAL:id parameter_type_list:ptl PARAR
+	PARAL:id abstract_declarator:ad PARAR:idr {:
+		TreeNode parent = new TreeNode(null, "direct_abstract_declarator");
+		parent.addChild(id);
+		parent.addChild(ad);
+		parent.addChild(idr);
+		RESULT = parent;
+	:}
+	| SQUAREDL:id SQUAREDR:idr {:
+		TreeNode parent = new TreeNode(null, "direct_abstract_declarator");
+		parent.addChild(id);
+		parent.addChild(idr);
+		RESULT = parent;
+	:}
+	| SQUAREDL:id constant_expression:ce SQUAREDR:idr {:
+		TreeNode parent = new TreeNode(null, "direct_abstract_declarator");
+		parent.addChild(id);
+		parent.addChild(ce);
+		parent.addChild(idr);
+		RESULT = parent;
+	:}
+	| direct_abstract_declarator:dad SQUAREDL:id SQUAREDR:idr {:
+		TreeNode parent = new TreeNode(null, "direct_abstract_declarator");
+		parent.addChild(dad);
+		parent.addChild(id);
+		parent.addChild(idr);
+		RESULT = parent;
+	:}
+	| direct_abstract_declarator:dad SQUAREDL:id constant_expression:ce SQUAREDR:idr {:
+		TreeNode parent = new TreeNode(null, "direct_abstract_declarator");
+		parent.addChild(dad);
+		parent.addChild(id);
+		parent.addChild(ce);
+		parent.addChild(idr);
+		RESULT = parent;
+	:}
+	| PARAL:id PARAR:idr {:
+		TreeNode parent = new TreeNode(null, "direct_abstract_declarator");
+		parent.addChild(id);
+		parent.addChild(idr);
+		RESULT = parent;
+	:}
+	| PARAL:id parameter_type_list:ptl PARAR:idr {:
+		TreeNode parent = new TreeNode(null, "direct_abstract_declarator");
+		parent.addChild(id);
+		parent.addChild(ptl);
+		parent.addChild(idr);
+		RESULT = parent;
+	:}
+	| direct_abstract_declarator:dad PARAL:id PARAR:idr {:
+		TreeNode parent = new TreeNode(null, "direct_abstract_declarator");
+		parent.addChild(dad);
+		parent.addChild(id);
+		parent.addChild(idr);
+		RESULT = parent;
+	:}
+	| direct_abstract_declarator:dad PARAL:id parameter_type_list:ptl PARAR:idr {:
+		TreeNode parent = new TreeNode(null, "direct_abstract_declarator");
+		parent.addChild(dad);
+		parent.addChild(id);
+		parent.addChild(ptl);
+		parent.addChild(idr);
+		RESULT = parent;
+	:}
 	;
 
 initializer ::=
-	assignment_expression:ae
-	| CURLYL initializer_list:il CURLYR
-	| CURLYL initializer_list:il COMMA CURLYR
+	assignment_expression:ae {:
+		TreeNode parent = new TreeNode(null, "initializer");
+		parent.addChild(ae);
+		RESULT = parent;
+	:}
+	| CURLYL initializer_list:il CURLYR {:
+		TreeNode parent = new TreeNode(null, "initializer");
+		parent.addChild("{");
+		parent.addChild(il);
+		parent.addChild("}");
+		RESULT = parent;
+	:}
+	| CURLYL initializer_list:il COMMA CURLYR {:
+		TreeNode parent = new TreeNode(null, "initializer");
+		parent.addChild("{");
+		parent.addChild(il);
+		parent.addChild(",");
+		parent.addChild("}");
+		RESULT = parent;
+	:}
 	;
 
 initializer_list ::=
-	initializer:i
-	| initializer_list:il COMMA initializer:i
+	initializer:i {:
+		TreeNode parent = new TreeNode(null, "initializer");
+		parent.addChild(i);
+		RESULT = parent;
+	:}
+	| initializer_list:il COMMA initializer:i {:
+		TreeNode parent = new TreeNode(null, "initializer");
+		parent.addChild(i);
+		parent.addChild(il);
+		RESULT = parent;
+	:}
 	;
 
 statement ::=
-	labeled_statement:ls
-	| compound_statement:cs
-	| expression_statement:es
-	| selection_statement:ss
-	| iteration_statement:is
-	| jump_statement:js;
+	labeled_statement:otherstmnt {:
+		TreeNode parent = new TreeNode(null, "statement");
+		parent.addChild(otherstmnt);
+		RESULT = parent;
+	:}
+	| compound_statement:otherstmnt {:
+		TreeNode parent = new TreeNode(null, "statement");
+		parent.addChild(otherstmnt);
+		RESULT = parent;
+	:}
+	| expression_statement:otherstmnt {:
+		TreeNode parent = new TreeNode(null, "statement");
+		parent.addChild(otherstmnt);
+		RESULT = parent;
+	:}
+	| selection_statement:otherstmnt {:
+		TreeNode parent = new TreeNode(null, "statement");
+		parent.addChild(otherstmnt);
+		RESULT = parent;
+	:}
+	| iteration_statement:otherstmnt {:
+		TreeNode parent = new TreeNode(null, "statement");
+		parent.addChild(otherstmnt);
+		RESULT = parent;
+	:}
+	| jump_statement:otherstmnt {:
+		TreeNode parent = new TreeNode(null, "statement");
+		parent.addChild(otherstmnt);
+		RESULT = parent;
+	:}
+	;
 
 labeled_statement ::=
-	IDENTIFIER:id COLON statement:s
-	| CASE constant_expression:ce COLON statement:s
-	| DEFAULT COLON statement:s
+	IDENTIFIER:id COLON statement:s {:
+		TreeNode parent = new TreeNode(null, "labeled_statement");
+		parent.addChild(id);
+		parent.addChild(":");
+		parent.addChild(s);
+		RESULT = parent;
+	:}
+	| CASE constant_expression:ce COLON statement:s {:
+		TreeNode parent = new TreeNode(null, "labeled_statement");
+		parent.addChild("case");
+		parent.addChild(ce);
+		parent.addChild(":");
+		parent.addChild(s);
+		RESULT = parent;
+	:}
+	| DEFAULT COLON statement:s {:
+		TreeNode parent = new TreeNode(null, "labeled_statement");
+		parent.addChild("default");
+		parent.addChild(":");
+		parent.addChild(s);
+		RESULT = parent;
+	:}
 	;
 
 compound_statement ::=
-	CURLYL CURLYR
-	| CURLYL decl_stmnt_list:dsl CURLYR
+	CURLYL CURLYR {:
+		TreeNode parent = new TreeNode(null, "compound_statement");
+		parent.addChild("{");
+		parent.addChild("}");
+		RESULT = parent;
+	:}
+	| CURLYL decl_stmnt_list:dsl CURLYR {:
+		TreeNode parent = new TreeNode(null, "compound_statement");
+		parent.addChild("{");
+		parent.addChild(dsl);
+		parent.addChild("}");
+		RESULT = parent;
+	:}
 	;
 
 decl_stmnt_list ::=
-	declaration:dl
-	|statement:sl
-	|decl_stmnt_list declaration
-	|decl_stmnt_list statement
+	declaration:ds {:
+		TreeNode parent = new TreeNode(null, "decl_stmnt_list");
+		parent.addChild(ds);
+		RESULT = parent;
+	:}
+	|statement:ds {:
+		TreeNode parent = new TreeNode(null, "decl_stmnt_list");
+		parent.addChild(ds);
+		RESULT = parent;
+	:}
+	|decl_stmnt_list:dsl declaration:ds {:
+		TreeNode parent = new TreeNode(null, "decl_stmnt_list");
+		parent.addChild(dsl);
+		parent.addChild(ds);
+		RESULT = parent;
+	:}
+	|decl_stmnt_list:dsl statement:ds {:
+		TreeNode parent = new TreeNode(null, "decl_stmnt_list");
+		parent.addChild(dsl);
+		parent.addChild(ds);
+		RESULT = parent;
+	:}
 	;
 
 expression_statement ::=
-	SEMI
-	| expression:e SEMI
+	SEMI {:
+		TreeNode parent = new TreeNode(null, "expression_statement");
+		parent.addChild(";");
+		RESULT = parent;
+	:}
+	| expression:e SEMI {:
+		TreeNode parent = new TreeNode(null, "expression_statement");
+		parent.addChild(e);
+		parent.addChild(";");
+		RESULT = parent;
+	:}
 	;
 
 selection_statement ::=
-	IF PARAL expression:e PARAR statement:s
-	| IF PARAL expression:e PARAR statement:s1 ELSE statement:s2
-	| SWITCH PARAL expression:e PARAR statement:s
+	IF PARAL expression:e PARAR statement:s {:
+		TreeNode parent = new TreeNode(null, "selection_statement");
+		parent.addChild("if");
+		parent.addChild("(");
+		parent.addChild(e);
+		parent.addChild(")");
+		parent.addChild(s);
+		RESULT = parent;
+	:}
+	| IF PARAL expression:e PARAR statement:s1 ELSE statement:s2 {:
+		TreeNode parent = new TreeNode(null, "selection_statement");
+		parent.addChild("if");
+		parent.addChild("(");
+		parent.addChild(e);
+		parent.addChild(")");
+		parent.addChild(s1);
+		parent.addChild("else");
+		parent.addChild(s2);
+		RESULT = parent;
+	:}
+	| SWITCH PARAL expression:e PARAR statement:s {:
+		TreeNode parent = new TreeNode(null, "selection_statement");
+		parent.addChild("switch");
+		parent.addChild("(");
+		parent.addChild(e);
+		parent.addChild(")");
+		parent.addChild(s);
+		RESULT = parent;
+	:}
 	;
 
 iteration_statement ::=
-	WHILE PARAL expression:e PARAR statement:s
-	| DO statement:s WHILE PARAL expression:e PARAR SEMI
-	| FOR PARAL expression_statement:es1 expression_statement:es2 PARAR statement:s
-	| FOR PARAL expression_statement:es1 expression_statement:es2 expression:e PARAR statement:s
+	WHILE PARAL expression:e PARAR statement:s {:
+		TreeNode parent = new TreeNode(null, "iteration_statement");
+		parent.addChild("while");
+		parent.addChild("(");
+		parent.addChild(e);
+		parent.addChild(")");
+		parent.addChild(s);
+		RESULT = parent;
+	:}
+	| DO statement:s WHILE PARAL expression:e PARAR SEMI {:
+		TreeNode parent = new TreeNode(null, "iteration_statement");
+		parent.addChild("do");
+		parent.addChild(s);
+		parent.addChild("while");
+		parent.addChild("(");
+		parent.addChild(e);
+		parent.addChild(")");
+		parent.addChild(";");
+		RESULT = parent;
+	:}
+	| FOR PARAL expression_statement:es1 expression_statement:es2 PARAR statement:s {:
+		TreeNode parent = new TreeNode(null, "iteration_statement");
+		parent.addChild("for");
+		parent.addChild("(");
+		parent.addChild(es1);
+		parent.addChild(es2);
+		parent.addChild(")");
+		parent.addChild(s);
+		RESULT = parent;
+	:}
+	| FOR PARAL expression_statement:es1 expression_statement:es2 expression:e PARAR statement:s {:
+		TreeNode parent = new TreeNode(null, "iteration_statement");
+		parent.addChild("for");
+		parent.addChild("(");
+		parent.addChild(es1);
+		parent.addChild(es2);
+		parent.addChild(e);
+		parent.addChild(")");
+		parent.addChild(s);
+		RESULT = parent;
+	:}
 	;
 
 jump_statement ::=
-	GOTO IDENTIFIER:id SEMI
-	| CONTINUE SEMI
-	| BREAK SEMI
-	| RETURN SEMI
-	| RETURN expression:e SEMI
+	GOTO IDENTIFIER:id SEMI {:
+		TreeNode parent = new TreeNode(null, "jump_statement");
+		parent.addChild("goto");
+		parent.addChild(id);
+		parent.addChild(";");
+		RESULT = parent;
+	:}
+	| CONTINUE SEMI {:
+		TreeNode parent = new TreeNode(null, "jump_statement");
+		parent.addChild("continue");
+		parent.addChild(";");
+		RESULT = parent;
+	:}
+	| BREAK SEMI {:
+		TreeNode parent = new TreeNode(null, "jump_statement");
+		parent.addChild("break");
+		parent.addChild(";");
+		RESULT = parent;
+	:}
+	| RETURN SEMI {:
+		TreeNode parent = new TreeNode(null, "jump_statement");
+		parent.addChild("return");
+		parent.addChild(";");
+		RESULT = parent;
+	:}
+	| RETURN expression:e SEMI {:
+		TreeNode parent = new TreeNode(null, "jump_statement");
+		parent.addChild("return");
+		parent.addChild(e);
+		parent.addChild(";");
+		RESULT = parent;
+	:}
 	;
 
 translation_unit ::=
-	external_declaration:ed
-	| translation_unit:tu external_declaration:ed
+	external_declaration:ed {:
+		TreeNode parent = new TreeNode(null, "translation_unit");
+		parent.addChild(ed);
+		RESULT = parent;
+	:}
+	| translation_unit:tu external_declaration:ed {:
+		TreeNode parent = new TreeNode(null, "translation_unit");
+		parent.addChild(tu);
+		parent.addChild(ed);
+		RESULT = parent;
+	:}
 	;
 
 external_declaration ::=
-	function_definition:fd
-	| declaration:d
-	| error {:System.err.println("No se esperaba este token");:}
+	function_definition:fd {:
+		TreeNode parent = new TreeNode(null, "external_declaration");
+		parent.addChild(fd);
+		RESULT = parent;
+	:}
+	| declaration:d {:
+		TreeNode parent = new TreeNode(null, "external_declaration");
+		parent.addChild(d);
+		RESULT = parent;
+	:}
+	| error {:
+		System.err.println("No se esperaba este token");
+		TreeNode parent = new TreeNode(null, "external_declaration");
+		parent.addChild("ERROR");
+		RESULT = parent;
+	:}
 	;
 
 function_definition ::=
-	declaration_specifiers:ds declarator:d declaration_list:dl compound_statement:cs
-	| declaration_specifiers:ds declarator:d compound_statement:cs
-	| declarator:d declaration_list:dl compound_statement:cs
-	| declarator:d compound_statement:cs
+	declaration_specifiers:ds declarator:d declaration_list:dl compound_statement:cs {:
+		TreeNode parent = new TreeNode(null, "function_definition");
+		parent.addChild(ds);
+		parent.addChild(d);
+		parent.addChild(dl);
+		parent.addChild(cs);
+		RESULT = parent;
+	:}
+	| declaration_specifiers:ds declarator:d compound_statement:cs {:
+		TreeNode parent = new TreeNode(null, "function_definition");
+		parent.addChild(ds);
+		parent.addChild(d);
+		parent.addChild(cs);
+		RESULT = parent;
+	:}
+	| declarator:d declaration_list:dl compound_statement:cs {:
+		TreeNode parent = new TreeNode(null, "function_definition");
+		parent.addChild(d);
+		parent.addChild(dl);
+		parent.addChild(cs);
+		RESULT = parent;
+	:}
+	| declarator:d compound_statement:cs {:
+		TreeNode parent = new TreeNode(null, "function_definition");
+		parent.addChild(d);
+		parent.addChild(cs);
+		RESULT = parent;
+	:}
 	;

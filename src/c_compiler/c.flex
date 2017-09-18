@@ -5,7 +5,6 @@ import java_cup.runtime.*;
 %class Lexer
 %cup
 %int
-%standalone
 %line
 %column
 
