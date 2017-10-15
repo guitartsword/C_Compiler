@@ -56,7 +56,10 @@ public class C_Compiler {
     public static void runFile(String file){
         try {
             parser cupParser = new parser(new FileReader("test/"+file +".c"));
+            System.out.println("Analisis Sintactico Completado Exitosamente\n");
             TreeNode x = (TreeNode)cupParser.parse().value;
+            x.reduceTreeNode();
+            x.prettyPrint();
             x.saveTreeToFile(file);
         } catch (FileNotFoundException ex) {
             Logger.getLogger(C_Compiler.class.getName()).log(Level.SEVERE, null, ex);

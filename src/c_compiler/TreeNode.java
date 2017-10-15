@@ -59,7 +59,18 @@ public class TreeNode {
     public void setValue(Object value) {
         this.value = value;
     }
-
+    public void reduceTreeNode(){
+        if(childs.size() == 1){
+            value = childs.get(0).value;
+            childs = childs.get(0).childs;
+            this.reduceTreeNode();
+        }
+        if(childs.size() > 1){
+            for (TreeNode child:childs){
+                child.reduceTreeNode();
+            }
+        }
+    }
     @Override
     public String toString() {
         return toString("", true);
@@ -83,8 +94,7 @@ public class TreeNode {
         return tree;
     }
     public void prettyPrint(){
-        String indent = "    ";
-        System.out.print("└───");
+        String indent = "";
         System.out.println(value);
         int index = 0;
         for (TreeNode child:childs){
