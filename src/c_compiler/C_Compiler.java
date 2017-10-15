@@ -14,8 +14,8 @@ public class C_Compiler {
             "prueba",
             "small"
         };
-        buildLexer();
-        buildParser();
+        //buildLexer();
+        //buildParser();
         Thread.sleep(1000);
         for (String file:files) {
             System.out.println("\nCompilando Archivo " + file);

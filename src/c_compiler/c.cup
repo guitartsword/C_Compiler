@@ -92,6 +92,7 @@ non terminal TreeNode expression_statement;
 non terminal TreeNode external_declaration;
 non terminal TreeNode function_definition;
 non terminal TreeNode declaration_list;
+non terminal TreeNode statement_list;
 non terminal TreeNode decl_stmnt_list;
 non terminal TreeNode assignment_operator;
 non terminal TreeNode parameter_list;
@@ -1412,28 +1413,48 @@ compound_statement ::=
 		RESULT = parent;
 	:}
 	;
+declaration_list ::=
+	declaration:d {:
+		TreeNode parent = new TreeNode(null, "declaration_list");
+		parent.addChild(d);
+		RESULT = parent;
+	:}
+	| declaration_list:dl declaration:d {:
+		TreeNode parent = new TreeNode(null, "declaration_list");
+		parent.addChild(dl);
+		parent.addChild(d);
+		RESULT = parent;
+	:}
+	;
 
+statement_list ::=
+	statement:s {:
+		TreeNode parent = new TreeNode(null, "statement_list");
+		parent.addChild(s);
+		RESULT = parent;
+	:}
+	| statement_list:sl statement:s {:
+		TreeNode parent = new TreeNode(null, "statement_list");
+		parent.addChild(sl);
+		parent.addChild(s);
+		RESULT = parent;
+	:}
+	;
 decl_stmnt_list ::=
-	declaration:ds {:
+	declaration_list:dl {:
 		TreeNode parent = new TreeNode(null, "decl_stmnt_list");
-		parent.addChild(ds);
+		parent.addChild(dl);
 		RESULT = parent;
 	:}
-	|statement:ds {:
+	| statement_list:sl {:
 		TreeNode parent = new TreeNode(null, "decl_stmnt_list");
-		parent.addChild(ds);
+		parent.addChild(sl);
 		RESULT = parent;
 	:}
-	|decl_stmnt_list:dsl declaration:ds {:
+	| declaration_list:dl statement_list:sl {:
 		TreeNode parent = new TreeNode(null, "decl_stmnt_list");
-		parent.addChild(dsl);
-		parent.addChild(ds);
-		RESULT = parent;
-	:}
-	|decl_stmnt_list:dsl statement:ds {:
-		TreeNode parent = new TreeNode(null, "decl_stmnt_list");
-		parent.addChild(dsl);
-		parent.addChild(ds);
+		parent.addChild(dl);
+		parent.addChild(sl);
 		RESULT = parent;
 	:}
 	;
