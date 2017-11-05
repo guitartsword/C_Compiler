@@ -48,7 +48,6 @@ white_space = {new_line} | [ \t\f]
 "printf"		{ return symbol(sym.PRINTF,yytext()); }
 "scanf"			{ return symbol(sym.SCANF,yytext()); }
 "do"			{ return symbol(sym.DO,yytext()); }
-"bool"			{ return symbol(sym.BOOL,yytext()); }
 "double"		{ return symbol(sym.DOUBLE,yytext()); }
 "else"			{ return symbol(sym.ELSE,yytext()); }
 "enum"			{ return symbol(sym.ENUM,yytext()); }

@@ -3,11 +3,11 @@ int count = 0;
 
 void printAndCount(char * string);
 int main2(){
-    bool no_if=true;
+    short no_if=true;
     return 0;
 }
 void main3(int argc){
-    bool yes=false;
+    short yes=false;
     if(true){
         do_this();
     }else{
@@ -16,13 +16,14 @@ void main3(int argc){
 }
 int main(int argc, char* args){
     int aritmetica = 3+3+6/2*3;
+    char x= '2';
     while(3+3){
         
     }
-    char x= '2';
-    int x= 2;
+    x= 2;
+    printf(data) = 'h';
     //"yo no soy un " String literal"
-    char* string = "yo \"soy\" un String";
+    string = "yo \"soy\" un String";
     //Returns 0, no error, oneline comment
     if(3=='3'){
         int arit = 3;
@@ -38,11 +39,11 @@ int main(int argc, char* args){
     printAndCount(arit,3);
     printf("hola %d",3);
     scanf(arit,3);
-    int xy='\n';
-    int x=2;
-    bool algo = false;
+    xy='\n';
+    x=2;
+    algo = false;
     //"yo no soy un " String literal"
-    char* string = "yo \"soy\" un String";
+    string = "yo \"soy\" un String";
     //Returns 0, no error, oneline comment
     return 0;
 }
@@ -52,6 +53,3 @@ void printAndCount(char* string){
 /*This is a multi-line comment
  which ends here
  */
-if(true){
-    printf("hola\n");
-}

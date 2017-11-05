@@ -32,7 +32,7 @@ public class TreeNode {
     }
     
     public boolean addChild(TreeNode newChild){
-        newChild.setParent(this);
+        newChild.parent = this;
         return childs.add(newChild);
     }
     
