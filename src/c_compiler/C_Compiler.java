@@ -1,5 +1,6 @@
 package c_compiler;
 
+import AST.*;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.util.logging.Level;

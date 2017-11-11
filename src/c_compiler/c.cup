@@ -1,5 +1,6 @@
 package c_compiler;
 
+import AST.TreeNode;
 import java.io.*;
 import java_cup.runtime.*;
 
