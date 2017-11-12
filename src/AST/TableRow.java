@@ -11,13 +11,19 @@ import java.util.Objects;
  *
  * @author alvarez
  */
-public class Variable {
+public class TableRow {
 
     String id;
     Object value;
     String type;
 
-    public Variable(String id, Object value, String type) {
+    public TableRow() {
+        this.id =  "";
+        this.value = null;
+        this.type = "";
+    }
+
+    public TableRow(String id, Object value, String type) {
         this.id = id;
         this.value = value;
         this.type = type;
@@ -25,8 +31,8 @@ public class Variable {
 
     @Override
     public boolean equals(Object o) {
-        if (o instanceof Variable) {
-            Variable v = (Variable) o;
+        if (o instanceof TableRow) {
+            TableRow v = (TableRow) o;
             return (this == v) || (this.id.equals(v.id) && this.type.equals(v.type));
         }
         return false;
@@ -39,4 +45,10 @@ public class Variable {
         hash = 73 * hash + Objects.hashCode(this.type);
         return hash;
     }
+
+    @Override
+    public String toString() {
+        return "\nid= " + id + "\nvalue= " + value + "\ntype= " + type;
+    }
+
 }

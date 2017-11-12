@@ -14,55 +14,39 @@ import java.util.Objects;
  */
 public class Table {
 
-    String id;
-    Table father;
-    ArrayList<Variable> variables;
+    Table parent;
+    ArrayList<TableRow> rows;
 
-    public Table(String id) {
-        this.id = id;
-        this.father = null;
-        this.variables = new ArrayList();
+    public Table() {
+        this.parent = null;
+        this.rows = new ArrayList();
     }
 
-    public boolean addVariable(Variable v) {
-        if (!this.variables.contains(v)) {
-            this.variables.add(v);
+    public boolean addTableRow(TableRow v) {
+        if (!this.rows.contains(v)) {
+            this.rows.add(v);
             return true;
         }
         return false;
     }
 
-    public boolean addVariable(String id, Object value, String type) {
-        Variable v = new Variable(id, value, type);
-        if (!this.variables.contains(v)) {
-            this.variables.add(v);
+    public boolean addTableRow(String id, Object value, String type) {
+        TableRow v = new TableRow(id, value, type);
+        if (!this.rows.contains(v)) {
+            this.rows.add(v);
             return true;
         }
         return false;
     }
 
     public void addFather(Table t) {
-        this.father = t;
+        this.parent = t;
     }
-
-    public void addFather(String id) {
-        Table t = new Table(id);
-        this.father = t;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (o instanceof Table) {
-            Table t = (Table) o;
-            return this == t || this.id.equals(t.id);
+    
+    public void print(){
+        for (TableRow tr:this.rows) {
+            System.out.println(tr.toString());
         }
-        return false;
-    }
-
-    @Override
-    public int hashCode() {
-        int hash = 3;
-        hash = 97 * hash + Objects.hashCode(this.id);
-        return hash;
+        System.out.println();
     }
 }

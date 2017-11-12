@@ -3,12 +3,13 @@ package c_compiler;
 import AST.*;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class C_Compiler {
 
-    public static void main(String[] args) throws InterruptedException{
+    public static void main(String[] args) throws InterruptedException {
         // TODO code application logic here
         String[] files = {
             "main",
@@ -18,7 +19,7 @@ public class C_Compiler {
         //buildLexer();
         //buildParser();
         Thread.sleep(1000);
-        for (String file:files) {
+        for (String file : files) {
             System.out.println("\nCompilando Archivo " + file);
             runFile(file);
             System.out.println("Compilacion Completada");
@@ -54,19 +55,31 @@ public class C_Compiler {
         }
     }
 
-    public static void runFile(String file){
+    public static void runFile(String file) {
         try {
-            parser cupParser = new parser(new FileReader("test/"+file +".c"));
+            parser cupParser = new parser(new FileReader("test/" + file + ".c"));
             System.out.println("Analisis Sintactico Completado Exitosamente\n");
-            TreeNode x = (TreeNode)cupParser.parse().value;
+            TreeNode x = (TreeNode) cupParser.parse().value;
             x.reduceTreeNode();
-            x.prettyPrint();
+            //x.prettyPrint();
             x.saveTreeToFile(file);
+            Table table = sintactico(x);
+            table.print();
         } catch (FileNotFoundException ex) {
             Logger.getLogger(C_Compiler.class.getName()).log(Level.SEVERE, null, ex);
         } catch (Exception ex) {
             Logger.getLogger(C_Compiler.class.getName()).log(Level.SEVERE, null, ex);
         }
+    }
+
+    public static Table sintactico(TreeNode parent_node) {
+        Table table = new Table();
+        ArrayList<TreeNode> declarations = parent_node.getNodes("declaration");
+        for (TreeNode node : declarations) {
+            String type = (String) (node.getChilds().get(0)).getValue();
+            node.getChilds().get(1).getDeclarations(type, table);
+        }
+        return table;
     }
 
 }
