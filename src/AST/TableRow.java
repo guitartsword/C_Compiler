@@ -48,7 +48,7 @@ public class TableRow {
 
     @Override
     public String toString() {
-        return "\nid= " + id + "\nvalue= " + value + "\ntype= " + type;
+        return "id= " + id + ", value= " + value + ", type= " + type;
     }
 
 }
