@@ -33,7 +33,7 @@ public class TableRow {
     public boolean equals(Object o) {
         if (o instanceof TableRow) {
             TableRow v = (TableRow) o;
-            return (this == v) || (this.id.equals(v.id) && this.type.equals(v.type));
+            return (this == v) || this.id.equals(v.id);
         }
         return false;
     }

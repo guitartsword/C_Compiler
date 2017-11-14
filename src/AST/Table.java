@@ -26,6 +26,8 @@ public class Table {
         if (!this.rows.contains(v)) {
             this.rows.add(v);
             return true;
+        } else {
+            System.err.println(v.id + " ya ha sido declarada");
         }
         return false;
     }
@@ -35,6 +37,8 @@ public class Table {
         if (!this.rows.contains(v)) {
             this.rows.add(v);
             return true;
+        } else {
+            System.err.println(id + " ya ha sido declarada");
         }
         return false;
     }

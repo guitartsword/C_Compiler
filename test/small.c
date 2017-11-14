@@ -1,19 +1,18 @@
 int vb, a = 2;
+char x = 2;
+short joh = 4;
+char* hh = "hola mundo" +"hey";
 char* hh = "hola mundo";
-char* vv = hh;
+char vv = 'h';
+char va = '\n';
+int vat = "chun";
+int batidora = ;
 int* y,b;
 int main(){
-    char x;
+    int x = 3;
     run(vb);
     run();
     printf("hola %s", "mundo");
-    x = 3;
-    {
-      int b;
-    }
-    while (x){
-      int b;
-    }
     return 0;
 
 }

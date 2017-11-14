@@ -175,34 +175,4 @@ public class TreeNode {
         }
         return result;
     }
-
-    public void getDeclarations(String type, Table table) {
-        String id = (String) this.value;
-        switch (id) {
-            case "init_declarator_list":
-                for (TreeNode child : this.childs) {
-                    child.getDeclarations(type, table);
-                }
-                break;
-            case "init_declarator":
-                String child_id = (String) this.childs.get(0).getValue();
-                String value = (String) this.childs.get(1).getValue();
-                if (child_id == "declarator") {
-                    child_id = (String) this.childs.get(0).getChilds().get(1).getValue();
-                    table.addTableRow(child_id, value, "Pointer(" + type + ")");
-                } else {
-                    table.addTableRow(child_id, value, type);
-                }
-                break;
-            case "direct_declarator":
-                //No se cuando se usa este case pero existe
-                break;
-            case "declarator":
-                child_id = (String) this.childs.get(1).getValue();
-                table.addTableRow(child_id, null, "Pointer(" + type + ")");
-                break;
-            default:
-                table.addTableRow(id, null, type);
-        }
-    }
 }

@@ -1,22 +1,21 @@
-char y,sad,ra,nen;
-int hola, mundo;
-long isBig;
-double mydbl, other;
-int hello();
-int hello(char);
-int hello(char data);
-int hello(int value, long debug);
-int x, a;
-char function(key, value);
-int main(){
-    char x=3*3;
-    hello('s');
-    hello('\'');
-    hello('\n');
-    hello('\t');
-    hello('\0');
-    hello('\r');
-    hello(value, debug);
-    char x;
-    x=3;
-}
+int x = 0;
+int x1 = 0ñññ;
+int x1 = 1 + 3 * 4;
+int a = 'j';
+int a2 = '\n';
+int x3 = -1.0;
+
+short k = 32767;
+short k1 = -32767.2;
+short k2 = 32768;
+
+char y =2.1;
+char y1 = 'n';
+char y2 = '\n';
+char y3 = "chun";
+
+float t= 0.1;
+float b = 'c';
+
+double c= 'c';
+double c1= 2;
