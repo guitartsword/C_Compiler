@@ -169,30 +169,30 @@ postfix_expression ::=
 		parent.addChild(e);
 		RESULT = parent;
 	:}
-	| postfix_expression:pe POINT IDENTIFIER:id {:
+	| postfix_expression:pe POINT:p IDENTIFIER:id {:
 		TreeNode parent = new TreeNode(null, "postfix_expression");
 		parent.addChild(pe);
-		parent.addChild("DIRECT_ACCESS");
+		parent.addChild(p);
 		parent.addChild(id);
 		RESULT = parent;
 	:}
-	| postfix_expression:pe PTR_OP IDENTIFIER:id {:
+	| postfix_expression:pe PTR_OP:po IDENTIFIER:id {:
 		TreeNode parent = new TreeNode(null, "postfix_expression");
 		parent.addChild(pe);
-		parent.addChild("REFERENCE_ACCESS");
+		parent.addChild(po);
 		parent.addChild(id);
 		RESULT = parent;
 	:}
 	| postfix_expression:pe INC_OP:op {:
 		TreeNode parent = new TreeNode(null, "postfix_expression");
 		parent.addChild(pe);
-		parent.addChild("POST_INC");
+		parent.addChild(op);
 		RESULT = parent;
 	:}
 	| postfix_expression:pe DEC_OP:op {:
 		TreeNode parent = new TreeNode(null, "postfix_expression");
 		parent.addChild(pe);
-		parent.addChild("POST_DEC");
+		parent.addChild(op);
 		RESULT = parent;
 	:}
 	;
@@ -205,13 +205,13 @@ unary_expression ::=
 	:}
 	| INC_OP:op unary_expression:ue {:
 		TreeNode parent = new TreeNode(null, "unary_expression");
-		parent.addChild("PRE_INC");
+		parent.addChild(op);
 		parent.addChild(ue);
 		RESULT = parent;
 	:}
 	| DEC_OP:op unary_expression:ue {:
 		TreeNode parent = new TreeNode(null, "unary_expression");
-		parent.addChild("PRE_DEC");
+		parent.addChild(op);
 		parent.addChild(ue);
 		RESULT = parent;
 	:}
@@ -221,15 +221,15 @@ unary_expression ::=
 		parent.addChild(ce);
 		RESULT = parent;
 	:}
-	| SIZEOF unary_expression:ue {:
+	| SIZEOF:so unary_expression:ue {:
 		TreeNode parent = new TreeNode(null, "unary_expression");
-		parent.addChild("sizeof");
+		parent.addChild(so);
 		parent.addChild(ue);
 		RESULT = parent;
 	:}
-	| SIZEOF PARAL type_name:tn PARAR {:
+	| SIZEOF:so PARAL type_name:tn PARAR {:
 		TreeNode parent = new TreeNode(null, "unary_expression");
-		parent.addChild("sizeof");
+		parent.addChild(so);
 		parent.addChild(tn);
 		RESULT = parent;
 	:}
@@ -322,17 +322,17 @@ additive_expression ::=
 		parent.addChild(me);
 		RESULT = parent;
 	:}
-	| additive_expression:ae PLUS multiplicative_expression:me {:
+	| additive_expression:ae PLUS:op multiplicative_expression:me {:
 		TreeNode parent = new TreeNode(null, "additive_expression");
-		TreeNode child = new TreeNode(parent, "+");
+		TreeNode child = new TreeNode(parent, op);
 		parent.addChild(child);
 		child.addChild(ae);
 		child.addChild(me);
 		RESULT = parent;
 	:}
-	| additive_expression:ae MINUS multiplicative_expression:me {:
+	| additive_expression:ae MINUS:op multiplicative_expression:me {:
 		TreeNode parent = new TreeNode(null, "additive_expression");
-		TreeNode child = new TreeNode(parent, "-");
+		TreeNode child = new TreeNode(parent, op);
 		parent.addChild(child);
 		child.addChild(ae);
 		child.addChild(me);
@@ -346,17 +346,17 @@ shift_expression ::=
 		parent.addChild(ae);
 		RESULT = parent;
 	:}
-	| shift_expression:se LEFT_OP additive_expression:ae {:
+	| shift_expression:se LEFT_OP:op additive_expression:ae {:
 		TreeNode parent = new TreeNode(null, "shift_expression");
-		TreeNode child = new TreeNode(parent, "<<");
+		TreeNode child = new TreeNode(parent, op);
 		parent.addChild(child);
 		child.addChild(se);
 		child.addChild(ae);
 		RESULT = parent;
 	:}
-	| shift_expression:se RIGHT_OP additive_expression:ae {:
+	| shift_expression:se RIGHT_OP:op additive_expression:ae {:
 		TreeNode parent = new TreeNode(null, "shift_expression");
-		TreeNode child = new TreeNode(parent, "<<");
+		TreeNode child = new TreeNode(parent, op);
 		parent.addChild(child);
 		parent.addChild(se);
 		parent.addChild(ae);
@@ -535,49 +535,48 @@ assignment_expression ::=
 	;
 
 assignment_operator ::=
-	ASSIGN {:
-		TreeNode parent = new TreeNode(null, "=");
+	ASSIGN:a {:
+		TreeNode parent = new TreeNode(null, a);
 		RESULT = parent;
 	:}
-	| MUL_ASSIGN {:
-		TreeNode parent = new TreeNode(null, "*=");
-		parent.addChild("*=");
+	| MUL_ASSIGN:a {:
+		TreeNode parent = new TreeNode(null, a);
 		RESULT = parent;
 	:}
-	| DIV_ASSIGN {:
-		TreeNode parent = new TreeNode(null, "/=");
+	| DIV_ASSIGN:a {:
+		TreeNode parent = new TreeNode(null, a);
 		RESULT = parent;
 	:}
-	| MOD_ASSIGN {:
-		TreeNode parent = new TreeNode(null, "%=");
+	| MOD_ASSIGN:a {:
+		TreeNode parent = new TreeNode(null, a);
 		RESULT = parent;
 	:}
-	| ADD_ASSIGN {:
-		TreeNode parent = new TreeNode(null, "+=");
+	| ADD_ASSIGN:a {:
+		TreeNode parent = new TreeNode(null, a);
 		RESULT = parent;
 	:}
-	| SUB_ASSIGN {:
-		TreeNode parent = new TreeNode(null, "-=");
+	| SUB_ASSIGN:a {:
+		TreeNode parent = new TreeNode(null, a);
 		RESULT = parent;
 	:}
-	| LEFT_ASSIGN {:
-		TreeNode parent = new TreeNode(null, "<<=");
+	| LEFT_ASSIGN:a {:
+		TreeNode parent = new TreeNode(null, a);
 		RESULT = parent;
 	:}
-	| RIGHT_ASSIGN {:
-		TreeNode parent = new TreeNode(null, ">>=");
+	| RIGHT_ASSIGN:a {:
+		TreeNode parent = new TreeNode(null, a);
 		RESULT = parent;
 	:}
-	| AND_ASSIGN {:
-		TreeNode parent = new TreeNode(null, "&=");
+	| AND_ASSIGN:a {:
+		TreeNode parent = new TreeNode(null, a);
 		RESULT = parent;
 	:}
-	| XOR_ASSIGN {:
-		TreeNode parent = new TreeNode(null, "^=");
+	| XOR_ASSIGN:a {:
+		TreeNode parent = new TreeNode(null, a);
 		RESULT = parent;
 	:}
-	| OR_ASSIGN {:
-		TreeNode parent = new TreeNode(null, "|=");
+	| OR_ASSIGN:a {:
+		TreeNode parent = new TreeNode(null, a);
 		RESULT = parent;
 	:}
 	;
@@ -811,9 +810,7 @@ struct_or_union_specifier ::=
 	| UNION:u CURLYL struct_declaration_list:sdl CURLYR {:
 		TreeNode parent = new TreeNode(null, "struct_or_union_specifier");
 		parent.addChild(u);
-		parent.addChild("{");
 		parent.addChild(sdl);
-		parent.addChild("}");
 		RESULT = parent;
 	:}
 	| UNION:u IDENTIFIER:id {:
@@ -1277,16 +1274,16 @@ labeled_statement ::=
 		parent.addChild(s);
 		RESULT = parent;
 	:}
-	| CASE constant_expression:ce COLON statement:s {:
+	| CASE:cs constant_expression:ce COLON statement:s {:
 		TreeNode parent = new TreeNode(null, "labeled_statement");
-		parent.addChild("case");
+		parent.addChild(cs);
 		parent.addChild(ce);
 		parent.addChild(s);
 		RESULT = parent;
 	:}
-	| DEFAULT COLON statement:s {:
+	| DEFAULT:d COLON statement:s {:
 		TreeNode parent = new TreeNode(null, "labeled_statement");
-		parent.addChild("default");
+		parent.addChild(d);
 		parent.addChild(s);
 		RESULT = parent;
 	:}
@@ -1384,24 +1381,24 @@ expression_statement ::=
 	;
 
 selection_statement ::=
-	IF PARAL expression:e PARAR statement:s {:
+	IF:i PARAL expression:e PARAR statement:s {:
 		TreeNode parent = new TreeNode(null, "selection_statement");
-		parent.addChild("if");
+		parent.addChild(i);
 		parent.addChild(e);
 		parent.addChild(s);
 		RESULT = parent;
 	:}
-	| IF PARAL expression:e PARAR statement:s1 ELSE statement:s2 {:
+	| IF:i PARAL expression:e PARAR statement:s1 ELSE statement:s2 {:
 		TreeNode parent = new TreeNode(null, "selection_statement");
-		parent.addChild("if");
+		parent.addChild(i);
 		parent.addChild(e);
 		parent.addChild(s1);
 		parent.addChild(s2);
 		RESULT = parent;
 	:}
-	| SWITCH PARAL expression:e PARAR statement:s {:
+	| SWITCH:sw PARAL expression:e PARAR statement:s {:
 		TreeNode parent = new TreeNode(null, "selection_statement");
-		parent.addChild("switch");
+		parent.addChild(sw);
 		parent.addChild(e);
 		parent.addChild(s);
 		RESULT = parent;
@@ -1409,32 +1406,32 @@ selection_statement ::=
 	;
 
 iteration_statement ::=
-	WHILE PARAL expression:e PARAR statement:s {:
+	WHILE:wh PARAL expression:e PARAR statement:s {:
 		TreeNode parent = new TreeNode(null, "iteration_statement");
-		parent.addChild("while");
+		parent.addChild(wh);
 		parent.addChild(e);
 		parent.addChild(s);
 		RESULT = parent;
 	:}
-	| DO statement:s WHILE PARAL expression:e PARAR SEMI {:
+	| DO:d statement:s WHILE:wh PARAL expression:e PARAR SEMI {:
 		TreeNode parent = new TreeNode(null, "iteration_statement");
-		parent.addChild("do");
+		parent.addChild(d);
 		parent.addChild(s);
-		parent.addChild("while");
+		parent.addChild(wh);
 		parent.addChild(e);
 		RESULT = parent;
 	:}
-	| FOR PARAL expression_statement:es1 expression_statement:es2 PARAR statement:s {:
+	| FOR:f PARAL expression_statement:es1 expression_statement:es2 PARAR statement:s {:
 		TreeNode parent = new TreeNode(null, "iteration_statement");
-		parent.addChild("for");
+		parent.addChild(f);
 		parent.addChild(es1);
 		parent.addChild(es2);
 		parent.addChild(s);
 		RESULT = parent;
 	:}
-	| FOR PARAL expression_statement:es1 expression_statement:es2 expression:e PARAR statement:s {:
+	| FOR:f PARAL expression_statement:es1 expression_statement:es2 expression:e PARAR statement:s {:
 		TreeNode parent = new TreeNode(null, "iteration_statement");
-		parent.addChild("for");
+		parent.addChild(f);
 		parent.addChild(es1);
 		parent.addChild(es2);
 		parent.addChild(e);
@@ -1444,30 +1441,30 @@ iteration_statement ::=
 	;
 
 jump_statement ::=
-	GOTO IDENTIFIER:id SEMI {:
+	GOTO:gt IDENTIFIER:id SEMI {:
 		TreeNode parent = new TreeNode(null, "jump_statement");
-		parent.addChild("goto");
+		parent.addChild(gt);
 		parent.addChild(id);
 		RESULT = parent;
 	:}
-	| CONTINUE SEMI {:
+	| CONTINUE:c SEMI {:
 		TreeNode parent = new TreeNode(null, "jump_statement");
-		parent.addChild("continue");
+		parent.addChild(c);
 		RESULT = parent;
 	:}
-	| BREAK SEMI {:
+	| BREAK:br SEMI {:
 		TreeNode parent = new TreeNode(null, "jump_statement");
-		parent.addChild("break");
+		parent.addChild(br);
 		RESULT = parent;
 	:}
-	| RETURN SEMI {:
+	| RETURN:r SEMI {:
 		TreeNode parent = new TreeNode(null, "jump_statement");
-		parent.addChild("return");
+		parent.addChild(r);
 		RESULT = parent;
 	:}
-	| RETURN expression:e SEMI {:
+	| RETURN:r expression:e SEMI {:
 		TreeNode parent = new TreeNode(null, "jump_statement");
-		parent.addChild("return");
+		parent.addChild(r);
 		parent.addChild(e);
 		RESULT = parent;
 	:}
