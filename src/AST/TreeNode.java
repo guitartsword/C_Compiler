@@ -9,6 +9,7 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
+import java_cup.runtime.Symbol;
 
 /**
  *
@@ -18,7 +19,7 @@ public class TreeNode {
 
     private TreeNode parent;
     private ArrayList<TreeNode> childs = new ArrayList();
-    private Object value;
+    private Symbol value;
 
     public TreeNode(TreeNode copy) {
         parent = copy.parent;
@@ -26,7 +27,7 @@ public class TreeNode {
         value = copy.value;
     }
 
-    public TreeNode(TreeNode parent, Object value) {
+    public TreeNode(TreeNode parent, Symbol value) {
         this.parent = parent;
         this.value = value;
     }
@@ -36,7 +37,7 @@ public class TreeNode {
         return childs.add(newChild);
     }
 
-    public boolean addChild(Object value) {
+    public boolean addChild(Symbol value) {
         return childs.add(new TreeNode(this, value));
     }
 
@@ -52,11 +53,11 @@ public class TreeNode {
         return this.parent;
     }
 
-    public Object getValue() {
+    public Symbol getValue() {
         return this.value;
     }
 
-    public void setValue(Object value) {
+    public void setValue(Symbol value) {
         this.value = value;
     }
 
@@ -164,9 +165,9 @@ public class TreeNode {
         }
     }
 
-    public ArrayList<TreeNode> getNodes(Object value) {
+    public ArrayList<TreeNode> getNodes(String value) {
         ArrayList<TreeNode> result = new ArrayList();
-        if (this.value.equals(value)) {
+        if (this.value.value.equals(value)) {
             result.add(this);
         } else {
             for (TreeNode node : childs) {
