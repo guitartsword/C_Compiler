@@ -11,13 +11,12 @@ import java_cup.runtime.*;
 %{
 	private Symbol symbol(int sym) {
 		Symbol data = new Symbol(sym, yycolumn, yyline);
-		data.value = data;
 		return data;
 	}
 
 	private Symbol symbol(int sym, Object val) {
-		Symbol data = new Symbol(sym, yycolumn, yyline, val);
-		data.value = data;
+		Symbol data = new Symbol(sym, yycolumn, yyline);
+		data.value = new Symbol(sym, yycolumn, yyline, val);
 		return data;
 	}
 

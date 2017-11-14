@@ -292,7 +292,7 @@ multiplicative_expression ::=
 	:}
 	| multiplicative_expression:me MUL:op cast_expression:ce {:
 		TreeNode parent = new TreeNode(null, "multiplicative_expression");
-		TreeNode child = new TreeNode(parent, op);
+		TreeNode child = new TreeNode(parent, (Symbol)op);
 		parent.addChild(child);
 		child.addChild(me);
 		child.addChild(ce);
@@ -300,7 +300,7 @@ multiplicative_expression ::=
 	:}
 	| multiplicative_expression:me DIVIDE:op cast_expression:ce {:
 		TreeNode parent = new TreeNode(null, "multiplicative_expression");
-		TreeNode child = new TreeNode(parent, op);
+		TreeNode child = new TreeNode(parent, (Symbol)op);
 		parent.addChild(child);
 		child.addChild(me);
 		child.addChild(ce);
@@ -308,7 +308,7 @@ multiplicative_expression ::=
 	:}
 	| multiplicative_expression:me MODULUS:op cast_expression:ce {:
 		TreeNode parent = new TreeNode(null, "multiplicative_expression");
-		TreeNode child = new TreeNode(parent, op);
+		TreeNode child = new TreeNode(parent, (Symbol)op);
 		parent.addChild(child);
 		child.addChild(me);
 		child.addChild(ce);
@@ -324,7 +324,7 @@ additive_expression ::=
 	:}
 	| additive_expression:ae PLUS:op multiplicative_expression:me {:
 		TreeNode parent = new TreeNode(null, "additive_expression");
-		TreeNode child = new TreeNode(parent, op);
+		TreeNode child = new TreeNode(parent, (Symbol)op);
 		parent.addChild(child);
 		child.addChild(ae);
 		child.addChild(me);
@@ -332,7 +332,7 @@ additive_expression ::=
 	:}
 	| additive_expression:ae MINUS:op multiplicative_expression:me {:
 		TreeNode parent = new TreeNode(null, "additive_expression");
-		TreeNode child = new TreeNode(parent, op);
+		TreeNode child = new TreeNode(parent, (Symbol)op);
 		parent.addChild(child);
 		child.addChild(ae);
 		child.addChild(me);
@@ -348,7 +348,7 @@ shift_expression ::=
 	:}
 	| shift_expression:se LEFT_OP:op additive_expression:ae {:
 		TreeNode parent = new TreeNode(null, "shift_expression");
-		TreeNode child = new TreeNode(parent, op);
+		TreeNode child = new TreeNode(parent, (Symbol)op);
 		parent.addChild(child);
 		child.addChild(se);
 		child.addChild(ae);
@@ -356,7 +356,7 @@ shift_expression ::=
 	:}
 	| shift_expression:se RIGHT_OP:op additive_expression:ae {:
 		TreeNode parent = new TreeNode(null, "shift_expression");
-		TreeNode child = new TreeNode(parent, op);
+		TreeNode child = new TreeNode(parent, (Symbol)op);
 		parent.addChild(child);
 		parent.addChild(se);
 		parent.addChild(ae);
@@ -526,7 +526,7 @@ assignment_expression ::=
 		TreeNode parent = new TreeNode(null, "assignment_expression");
 		TreeNode child = new TreeNode(parent, aop.getValue());
 		parent.addChild(child);
-		child.addChild("ERROR");
+		child.addChild(new Symbol(-1,0,0,"ERROR"));
 		child.addChild(ae);
 		RESULT = parent;
 		System.err.println("Asignacion solo a identificadores");
@@ -536,47 +536,47 @@ assignment_expression ::=
 
 assignment_operator ::=
 	ASSIGN:a {:
-		TreeNode parent = new TreeNode(null, a);
+		TreeNode parent = new TreeNode(null, (Symbol)a);
 		RESULT = parent;
 	:}
 	| MUL_ASSIGN:a {:
-		TreeNode parent = new TreeNode(null, a);
+		TreeNode parent = new TreeNode(null, (Symbol)a);
 		RESULT = parent;
 	:}
 	| DIV_ASSIGN:a {:
-		TreeNode parent = new TreeNode(null, a);
+		TreeNode parent = new TreeNode(null, (Symbol)a);
 		RESULT = parent;
 	:}
 	| MOD_ASSIGN:a {:
-		TreeNode parent = new TreeNode(null, a);
+		TreeNode parent = new TreeNode(null, (Symbol)a);
 		RESULT = parent;
 	:}
 	| ADD_ASSIGN:a {:
-		TreeNode parent = new TreeNode(null, a);
+		TreeNode parent = new TreeNode(null, (Symbol)a);
 		RESULT = parent;
 	:}
 	| SUB_ASSIGN:a {:
-		TreeNode parent = new TreeNode(null, a);
+		TreeNode parent = new TreeNode(null, (Symbol)a);
 		RESULT = parent;
 	:}
 	| LEFT_ASSIGN:a {:
-		TreeNode parent = new TreeNode(null, a);
+		TreeNode parent = new TreeNode(null, (Symbol)a);
 		RESULT = parent;
 	:}
 	| RIGHT_ASSIGN:a {:
-		TreeNode parent = new TreeNode(null, a);
+		TreeNode parent = new TreeNode(null, (Symbol)a);
 		RESULT = parent;
 	:}
 	| AND_ASSIGN:a {:
-		TreeNode parent = new TreeNode(null, a);
+		TreeNode parent = new TreeNode(null, (Symbol)a);
 		RESULT = parent;
 	:}
 	| XOR_ASSIGN:a {:
-		TreeNode parent = new TreeNode(null, a);
+		TreeNode parent = new TreeNode(null, (Symbol)a);
 		RESULT = parent;
 	:}
 	| OR_ASSIGN:a {:
-		TreeNode parent = new TreeNode(null, a);
+		TreeNode parent = new TreeNode(null, (Symbol)a);
 		RESULT = parent;
 	:}
 	;
@@ -618,7 +618,7 @@ declaration ::=
 	| declaration_specifiers:ds error {:
 		TreeNode parent = new TreeNode(null, "declaration");
 		parent.addChild(ds);
-		parent.addChild("ERROR");
+		parent.addChild(new Symbol(-1,0,0,"ERROR"));
 		RESULT = parent;
 		System.err.println("Se esperaba ; en la declaracion:");
 		System.err.println(RESULT);
@@ -1347,7 +1347,7 @@ decl_stmnt_list ::=
 	| statement_list:sl declaration_list:dl {:
 		TreeNode parent = new TreeNode(null, "decl_stmnt_list");
 		parent.addChild(sl);
-		parent.addChild("ERROR");
+		parent.addChild(new Symbol(-1,0,0,"ERROR"));
 		System.err.println("Las declaraciones se hacen antes");
 		RESULT = parent;
 	:}
@@ -1366,14 +1366,14 @@ expression_statement ::=
 	| expression:e declaration:d{:
 		TreeNode parent = new TreeNode(null, "expression_statement");
 		parent.addChild(e);
-		parent.addChild("ERROR");
+		parent.addChild(new Symbol(-1,0,0,"ERROR"));
 		RESULT = parent;
 		System.err.println("Se esperaba ; no una declaración");
 		System.err.println(RESULT);
 	:}
 	| error SEMI {:
 		TreeNode parent = new TreeNode(null, "expression_statement");
-		parent.addChild("ERROR");
+		parent.addChild(new Symbol(-1,0,0,"ERROR"));
 		RESULT = parent;
 		System.err.println("Expresion malformada");
 		System.err.println(RESULT);
@@ -1497,7 +1497,7 @@ external_declaration ::=
 	:}
 	| error {:
 		TreeNode parent = new TreeNode(null, "external_declaration");
-		parent.addChild("ERROR");
+		parent.addChild(new Symbol(-1,0,0,"ERROR"));
 		RESULT = parent;
 		System.err.println("No se esperaba este token:");
 		System.err.println(RESULT);

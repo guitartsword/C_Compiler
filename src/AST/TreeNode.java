@@ -31,14 +31,18 @@ public class TreeNode {
         this.parent = parent;
         this.value = value;
     }
+    public TreeNode(TreeNode parent, String value) {
+        this.parent = parent;
+        this.value = new Symbol(-1, 0, 0, value);
+    }
 
     public boolean addChild(TreeNode newChild) {
         newChild.parent = this;
         return childs.add(newChild);
     }
 
-    public boolean addChild(Symbol value) {
-        return childs.add(new TreeNode(this, value));
+    public boolean addChild(Object value) {
+        return childs.add(new TreeNode(this, (Symbol)value));
     }
 
     public void setParent(TreeNode parent) {
@@ -92,7 +96,7 @@ public class TreeNode {
             tree += "├───";
             indent += "│   ";
         }
-        tree += value.toString() + "\n";
+        tree += value.value.toString() + "\n";
         int index = 0;
         for (TreeNode child : childs) {
             index++;
@@ -103,7 +107,7 @@ public class TreeNode {
 
     public void prettyPrint() {
         String indent = "";
-        System.out.println(value);
+        System.out.println(value.value);
         int index = 0;
         for (TreeNode child : childs) {
             index++;
@@ -120,7 +124,7 @@ public class TreeNode {
             System.out.print("├───");
             indent += "│   ";
         }
-        System.out.println(value);
+        System.out.println(value.value);
         int index = 0;
         for (TreeNode child : childs) {
             index++;
@@ -156,7 +160,7 @@ public class TreeNode {
             out.write("├───".getBytes());
             indent += "│   ";
         }
-        out.write(value.toString().getBytes());
+        out.write(value.value.toString().getBytes());
         out.write("\n".getBytes());
         int index = 0;
         for (TreeNode child : childs) {
