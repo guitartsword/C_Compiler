@@ -27,7 +27,7 @@ public class Table {
             this.rows.add(v);
             return true;
         } else {
-            System.err.println(v.id + " ya ha sido declarada");
+            //System.err.println(v.id + " ya ha sido declarada");
         }
         return false;
     }
@@ -38,7 +38,7 @@ public class Table {
             this.rows.add(v);
             return true;
         } else {
-            System.err.println(id + " ya ha sido declarada");
+            //System.err.println(id + " ya ha sido declarada");
         }
         return false;
     }
@@ -46,9 +46,9 @@ public class Table {
     public void addFather(Table t) {
         this.parent = t;
     }
-    
-    public void print(){
-        for (TableRow tr:this.rows) {
+
+    public void print() {
+        for (TableRow tr : this.rows) {
             System.out.println(tr.toString());
         }
         System.out.println();

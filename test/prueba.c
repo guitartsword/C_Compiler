@@ -1,5 +1,4 @@
-int x = 0;
-int x1 = 0ñññ;
+int x = 0.0;
 int x1 = 1 + 3 * 4;
 int a = 'j';
 int a2 = '\n';
@@ -13,6 +12,8 @@ char y =2.1;
 char y1 = 'n';
 char y2 = '\n';
 char y3 = "chun";
+
+char* hh = "hola mundo";
 
 float t= 0.1;
 float b = 'c';
