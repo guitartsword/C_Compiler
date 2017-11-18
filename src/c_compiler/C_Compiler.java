@@ -19,8 +19,8 @@ public class C_Compiler {
             "prueba",
             "small"
         };
-        buildLexer();
-        buildParser();
+        //buildLexer();
+        //buildParser();
         for (String file : files) {
             runFile(file);
         }
@@ -139,12 +139,16 @@ public class C_Compiler {
                     return setValidNumber(value.value.toString(), node, type, false);
                 } else if (value.value.toString().equals("unary_expression")) {
                     return setValidNumber(node.getChilds().get(1).getValue().value.toString(), node, type, true);
+                }else if(value.sym >= 74 && value.sym <= 77){
+                    //aritmetica
+                    System.out.println("aritmetica " +value.sym);
                 }
             case "char":
                 return value.sym == 3;
             case "Pointer(char)":
                 return value.sym == 4;
         }
+        
         return false;
     }
 
