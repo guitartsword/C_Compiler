@@ -4,8 +4,6 @@ import AST.*;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java_cup.runtime.Symbol;
@@ -214,23 +212,26 @@ public class C_Compiler {
         if (negative) {
             ret = ret * -1;
         }
-        if (type.equals("short")) {
-            if (ret.shortValue() >= -32768 && ret.shortValue() <= 32767) {
-                node.setValue(ret.shortValue());
+        switch (type) {
+            case "short":
+                if (ret.shortValue() >= -32768 && ret.shortValue() <= 32767) {
+                    node.setValue(ret.shortValue());
+                    return true;
+                }   break;
+            case "long":
+                node.setValue(ret.longValue());
                 return true;
-            }
-        } else if (type.equals("long")) {
-            node.setValue(ret.longValue());
-            return true;
-        } else if (type.equals("int")) {
-            node.setValue(ret.intValue());
-            return true;
-        } else if (type.equals("float")) {
-            node.setValue(ret.floatValue());
-            return true;
-        } else if (type.equals("double")) {
-            node.setValue(ret);
-            return true;
+            case "int":
+                node.setValue(ret.intValue());
+                return true;
+            case "float":
+                node.setValue(ret.floatValue());
+                return true;
+            case "double":
+                node.setValue(ret);
+                return true;
+            default:
+                break;
         }
         return false;
     }
