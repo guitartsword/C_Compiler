@@ -22,6 +22,11 @@ public class Table {
         this.rows = new ArrayList();
     }
 
+    public Table(Table parent) {
+        this.parent = parent;
+        this.rows = new ArrayList();
+    }
+
     public boolean addTableRow(TableRow to_add) {
         TableRow result = search(to_add);
         if (result == null) {
