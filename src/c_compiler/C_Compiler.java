@@ -105,7 +105,7 @@ public class C_Compiler {
                     if (checkValueType(child_value, "Pointer(" + type + ")")) {                        
                         table.addTableRow(child_id.getValue().value.toString(), child_value.getValue().value, "Pointer(" + type + ")");
                     } else {
-                        System.err.println("Error en variable " + child_id.getValue().value.toString() + ", asignacion no es de tipo Pointer(" + type + ")");
+                        System.err.println("Error en variable " + child_id.getValue().value.toString() + ", asignacion no es de tipo " + type + "*");
                     }
                 } else if (checkValueType(child_value, type)) {
                     table.addTableRow(child_id.getValue().value.toString(), child_value.getValue().value, type);
@@ -191,7 +191,7 @@ public class C_Compiler {
                         if (node.getChilds().get(0).getValue().sym == 74) {
                             return Double.parseDouble(new_node.getValue().value.toString()) * -1;
                         } else {
-                            System.err.println("Error en linea " + temp_val.right + " columna " + temp_val.left + ", no se esperaba " + temp_val.value.toString() + " en operacion aritmetica");
+                            System.err.println("Error en la linea " + temp_val.right + ", columna " + temp_val.left + ", no se esperaba " + temp_val.value.toString() + " en operacion aritmetica");
                             return Double.parseDouble(new_node.getValue().value.toString());
                         }
                 }

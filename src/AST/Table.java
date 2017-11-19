@@ -22,20 +22,22 @@ public class Table {
         this.rows = new ArrayList();
     }
 
-    public boolean addTableRow(TableRow v) {
-        if (!this.rows.contains(v)) {
-            this.rows.add(v);
+    public boolean addTableRow(TableRow to_add) {
+        TableRow result = search(to_add);
+        if (result == null) {
+            this.rows.add(to_add);
             return true;
         } else {
-            System.err.println("Error en variable " + v.id + ", ya ha sido declarada");
+            System.err.println("Error en variable " + to_add.id + ", ya ha sido declarada");
         }
         return false;
     }
 
     public boolean addTableRow(String id, Object value, String type) {
-        TableRow v = new TableRow(id, value, type);
-        if (!this.rows.contains(v)) {
-            this.rows.add(v);
+        TableRow to_add = new TableRow(id, value, type);
+        TableRow result = search(to_add);
+        if (result == null) {
+            this.rows.add(to_add);
             return true;
         } else {
             System.err.println("Error en variable " + id + ", ya ha sido declarada");
@@ -45,6 +47,21 @@ public class Table {
 
     public void addFather(Table t) {
         this.parent = t;
+    }
+
+    public TableRow search(TableRow id) {
+        TableRow result = null;
+        if (parent != null) {
+            result = parent.search(id);
+        }
+        if (result == null) {
+            for (TableRow temp : rows) {
+                if (temp.equals(id)) {
+                    return temp;
+                }
+            }
+        }
+        return null;
     }
 
     public void print() {

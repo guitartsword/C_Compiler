@@ -5,7 +5,7 @@ int a2 = '\n';
 int x3 = -1.0;
 int x3 = -5.0;
 
-short k = ;
+short k = 32767;
 short k1 = -32767.2;
 short k2 = 32768;
 
