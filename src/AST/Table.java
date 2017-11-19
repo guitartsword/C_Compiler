@@ -27,7 +27,7 @@ public class Table {
             this.rows.add(v);
             return true;
         } else {
-            //System.err.println(v.id + " ya ha sido declarada");
+            System.err.println("Error en variable " + v.id + ", ya ha sido declarada");
         }
         return false;
     }
@@ -38,7 +38,7 @@ public class Table {
             this.rows.add(v);
             return true;
         } else {
-            //System.err.println(id + " ya ha sido declarada");
+            System.err.println("Error en variable " + id + ", ya ha sido declarada");
         }
         return false;
     }
