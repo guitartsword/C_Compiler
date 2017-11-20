@@ -3,11 +3,23 @@ int somefunc();
 int somefunc2(int, double);
 int somefunc3(double);
 int main(){
-    int a[];
-    a[0] = 2;
+    int main;
+    a = 3;
+    main = a;
+    {
+        char x;
+        x = main;
+    }
+    {
+        char y;
+        y = x;
+    }{int x;}
     a[1] = 3;
     return somefunc2(a[0],a[1]);
 }
 int somefunc(){
-    return 78;
+    char somefunc4;
+}
+void seet_vb(){
+    {int x;{int x=0;}}
 }
