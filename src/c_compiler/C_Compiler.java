@@ -59,13 +59,14 @@ public class C_Compiler {
         try {
             parser cupParser = new parser(new FileReader("test/" + file + ".c"));
             TreeNode x = (TreeNode) cupParser.parse().value;
-            x.reduceTreeNode();
-            //x.prettyPrint();
             x.saveTreeToFile(file);
+            x.reduceTreeNode();
+            x.prettyPrint();
+            //x.saveTreeToFile(file);
             Table table = semantico(x);
             Thread.sleep(50);
             table.print();
-            x.saveTreeToFile(file);
+            //x.saveTreeToFile(file);
 
         } catch (FileNotFoundException ex) {
             Logger.getLogger(C_Compiler.class.getName()).log(Level.SEVERE, null, ex);
@@ -89,18 +90,20 @@ public class C_Compiler {
 
     public static void getDeclarations(TreeNode node, String type, Table table) {
         String id = node.getValue().value.toString();
+        ArrayList<TreeNode> node_childs = node.getChilds();
+        TreeNode child_id, child_value;
         switch (id) {
             case "init_declarator_list":
-                for (TreeNode child : node.getChilds()) {
+                for (TreeNode child : node_childs) {
                     getDeclarations(child, type, table);
                 }
                 break;
             case "init_declarator":
-                TreeNode child_id = node.getChilds().get(0);
-                TreeNode child_value = node.getChilds().get(1);
+                child_id = node_childs.get(0);
+                child_value = node_childs.get(1);
                 if (child_id.getValue().value.equals("declarator")) {
                     child_id = child_id.getChilds().get(1);
-                    if (checkValueType(child_value, "Pointer(" + type + ")")) {                        
+                    if (checkValueType(child_value, "Pointer(" + type + ")")) {
                         table.addTableRow(child_id.getValue().value.toString(), child_value.getValue().value, "Pointer(" + type + ")");
                     } else {
                         System.err.println("Error en variable " + child_id.getValue().value.toString() + ", asignacion no es de tipo " + type + "*");
@@ -111,11 +114,34 @@ public class C_Compiler {
                     System.err.println("Error en variable " + child_id.getValue().value.toString() + ", asignacion no es de tipo " + type);
                 }
                 break;
-            case "direct_declarator":
-                //No se cuando se usa este case pero existe
+            case "direct_declarator": {
+                //[0] == type_declarator
+                //[1] == id
+                //[2] == extra info depending on type
+                String declaration_type = node_childs.get(0).getValue().value.toString();
+                if (declaration_type.equals("function_declarator")) {
+                    child_id = node_childs.get(1);
+                    String parameter_types = "";
+                    if(node_childs.size() > 2){
+                        parameter_types = node_childs.get(2).getValue().value.toString();
+                        if (parameter_types.equals("parameter_list")){
+                            ArrayList<String> params = new ArrayList();
+                            ArrayList<TreeNode> param_childs = node_childs.get(2).getChilds();
+                            for(TreeNode param:param_childs){
+                                params.add(param.getValue().value.toString());
+                            }
+                            parameter_types = String.join(" x ", params);
+                        }
+                    }
+                    parameter_types = type + " -> " + parameter_types;
+                    table.addTableRow(child_id.getValue().value.toString(), null, parameter_types);
+                } else if (declaration_type.equals("array_declarator")) {
+                    //Array declaration here
+                }
                 break;
+            }
             case "declarator":
-                child_id = node.getChilds().get(1);
+                child_id = node_childs.get(1);
                 table.addTableRow(child_id.getValue().value.toString(), null, "Pointer(" + type + ")");
                 break;
             default:
@@ -217,7 +243,8 @@ public class C_Compiler {
                 if (ret.shortValue() >= -32768 && ret.shortValue() <= 32767) {
                     node.setValue(ret.shortValue());
                     return true;
-                }   break;
+                }
+                break;
             case "long":
                 node.setValue(ret.longValue());
                 return true;

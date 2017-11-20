@@ -138,33 +138,39 @@ postfix_expression ::=
 	:}
 	| postfix_expression:pe PARAL:pl PARAR:pr {:
 		TreeNode parent = new TreeNode(null, "postfix_expression");
+		parent.addChild(new Symbol(-1,0,0,"function_call"));
 		parent.addChild(pe);
 		RESULT = parent;
 	:}
 	| postfix_expression:pe PARAL:pl expression:e PARAR:pr {:
 		TreeNode parent = new TreeNode(null, "postfix_expression");
+		parent.addChild(new Symbol(-1,0,0,"function_call"));
 		parent.addChild(pe);
 		parent.addChild(e);
 		RESULT = parent;
 	:}
 	| PRINTF:pf PARAL:pl PARAR:pr {:
 		TreeNode parent = new TreeNode(null, "postfix_expression");
+		parent.addChild(new Symbol(-1,0,0,"function_call"));
 		parent.addChild(pf);
 		RESULT = parent;
 	:}
 	| SCANF:sf PARAL:pl PARAR:pr {:
 		TreeNode parent = new TreeNode(null, "postfix_expression");
+		parent.addChild(new Symbol(-1,0,0,"function_call"));
 		parent.addChild(sf);
 		RESULT = parent;
 	:}
 	| PRINTF:pf PARAL:pl expression:e PARAR:pr {:
 		TreeNode parent = new TreeNode(null, "postfix_expression");
+		parent.addChild(new Symbol(-1,0,0,"function_call"));
 		parent.addChild(pf);
 		parent.addChild(e);
 		RESULT = parent;
 	:}
 	| SCANF:sf PARAL:pl expression:e PARAR:pr {:
 		TreeNode parent = new TreeNode(null, "postfix_expression");
+		parent.addChild(new Symbol(-1,0,0,"function_call"));
 		parent.addChild(sf);
 		parent.addChild(e);
 		RESULT = parent;
@@ -989,29 +995,34 @@ direct_declarator ::=
 	:}
 	| direct_declarator:dd SQUAREDL constant_expression:ce SQUAREDR {:
 		TreeNode parent = new TreeNode(null, "direct_declarator");
+		parent.addChild(new Symbol(-1,0,0,"array_declarator"));
 		parent.addChild(dd);
 		parent.addChild(ce);
 		RESULT = parent;
 	:}
 	| direct_declarator:dd SQUAREDL SQUAREDR {:
 		TreeNode parent = new TreeNode(null, "direct_declarator");
+		parent.addChild(new Symbol(-1,0,0,"array_declarator"));
 		parent.addChild(dd);
 		RESULT = parent;
 	:}
 	| direct_declarator:dd PARAL parameter_type_list:ptl PARAR {:
 		TreeNode parent = new TreeNode(null, "direct_declarator");
+		parent.addChild(new Symbol(-1,0,0,"function_declarator"));
 		parent.addChild(dd);
 		parent.addChild(ptl);
 		RESULT = parent;
 	:}
 	| direct_declarator:dd PARAL identifier_list:il PARAR {:
 		TreeNode parent = new TreeNode(null, "direct_declarator");
+		parent.addChild(new Symbol(-1,0,0,"function_declarator"));
 		parent.addChild(dd);
 		parent.addChild(il);
 		RESULT = parent;
 	:}
 	| direct_declarator:dd PARAL PARAR {:
 		TreeNode parent = new TreeNode(null, "direct_declarator");
+		parent.addChild(new Symbol(-1,0,0,"function_declarator"));
 		parent.addChild(dd);
 		RESULT = parent;
 	:}

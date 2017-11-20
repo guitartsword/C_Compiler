@@ -49,21 +49,18 @@ public class Table {
         return false;
     }
 
-    public void addFather(Table t) {
+    public void setParent(Table t) {
         this.parent = t;
     }
 
     public TableRow search(TableRow id) {
-        TableRow result = null;
-        if (parent != null) {
-            result = parent.search(id);
-        }
-        if (result == null) {
-            for (TableRow temp : rows) {
-                if (temp.equals(id)) {
-                    return temp;
-                }
+        for (TableRow row : rows) {
+            if (row.equals(id)) {
+                return row;
             }
+        }
+        if (parent != null) {
+            return parent.search(id);
         }
         return null;
     }
