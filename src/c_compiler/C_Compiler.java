@@ -13,8 +13,6 @@ public class C_Compiler {
     public static void main(String[] args) throws InterruptedException {
         // TODO code application logic here
         String[] files = {
-            "main",
-            "prueba",
             "small"
         };
         //buildLexer();
@@ -63,7 +61,8 @@ public class C_Compiler {
             x.reduceTreeNode();
             x.prettyPrint();
             //x.saveTreeToFile(file);
-            Table table = semantico(x);
+            Table table = new Table();
+            semantico(x,table);
             Thread.sleep(50);
             table.print();
             //x.saveTreeToFile(file);
@@ -78,16 +77,22 @@ public class C_Compiler {
         System.out.println("---------------------------------------------------------------\n");
     }
 
-    public static Table semantico(TreeNode parent_node) {
-        Table table = new Table();
-        ArrayList<TreeNode> declarations = parent_node.getNodes("declaration");
-        for (TreeNode node : declarations) {
-            String type = node.getChilds().get(0).getValue().value.toString();
-            getDeclarations(node.getChilds().get(1), type, table);
+    public static void semantico(TreeNode parent_node, Table table) {
+        ArrayList<TreeNode> childs = parent_node.getChilds();
+        for (TreeNode child : childs) {
+            if (child.getValue().value.equals("declaration")) {
+                String type = child.getChilds().get(0).getValue().value.toString();
+                getDeclarations(child.getChilds().get(1), type, table);
+            }else if (child.getValue().value.equals("decl_stmnt_list")){
+                Table child_table = new Table(table);
+                table.addChild(child_table);
+                semantico(child, child_table);
+            }else{
+                semantico(child, table);
+            }
         }
-        return table;
     }
-
+    
     public static void getDeclarations(TreeNode node, String type, Table table) {
         String id = node.getValue().value.toString();
         ArrayList<TreeNode> node_childs = node.getChilds();
@@ -122,12 +127,12 @@ public class C_Compiler {
                 if (declaration_type.equals("function_declarator")) {
                     child_id = node_childs.get(1);
                     String parameter_types = "";
-                    if(node_childs.size() > 2){
+                    if (node_childs.size() > 2) {
                         parameter_types = node_childs.get(2).getValue().value.toString();
-                        if (parameter_types.equals("parameter_list")){
+                        if (parameter_types.equals("parameter_list")) {
                             ArrayList<String> params = new ArrayList();
                             ArrayList<TreeNode> param_childs = node_childs.get(2).getChilds();
-                            for(TreeNode param:param_childs){
+                            for (TreeNode param : param_childs) {
                                 params.add(param.getValue().value.toString());
                             }
                             parameter_types = String.join(" x ", params);

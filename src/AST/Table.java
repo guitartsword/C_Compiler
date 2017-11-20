@@ -13,21 +13,20 @@ import java.util.ArrayList;
  */
 public class Table {
 
-    Table parent;
-    ArrayList<TableRow> rows;
+    Table parent = null;
+    ArrayList<TableRow> rows = new ArrayList();
+    ArrayList<Table> childs = new ArrayList();
 
     public Table() {
         this.parent = null;
-        this.rows = new ArrayList();
     }
 
     public Table(Table parent) {
         this.parent = parent;
-        this.rows = new ArrayList();
     }
-
+    
     public boolean addTableRow(TableRow to_add) {
-        TableRow result = search(to_add);
+        TableRow result = searchLocal(to_add);
         if (result == null) {
             this.rows.add(to_add);
             return true;
@@ -39,7 +38,7 @@ public class Table {
 
     public boolean addTableRow(String id, Object value, String type) {
         TableRow to_add = new TableRow(id, value, type);
-        TableRow result = search(to_add);
+        TableRow result = searchLocal(to_add);
         if (result == null) {
             this.rows.add(to_add);
             return true;
@@ -49,10 +48,22 @@ public class Table {
         return false;
     }
 
-    public void setParent(Table t) {
-        this.parent = t;
+    public void setParent(Table parent) {
+        this.parent = parent;
     }
-
+    
+    public void addChild(Table child){
+        child.parent = this;
+        childs.add(child);
+    }
+    public TableRow searchLocal(TableRow id){
+        for (TableRow row : rows) {
+            if (row.equals(id)) {
+                return row;
+            }
+        }
+        return null;
+    }
     public TableRow search(TableRow id) {
         for (TableRow row : rows) {
             if (row.equals(id)) {
@@ -66,9 +77,17 @@ public class Table {
     }
 
     public void print() {
+        System.out.println("PARENT");
         for (TableRow tr : this.rows) {
             System.out.println(tr.toString());
         }
-        System.out.println();
+        
+        int size = childs.size();
+        System.out.println("CHILD SIZE=" + size);
+        for (int i = 0; i < size; i++){
+            System.out.printf("CHILD[%d] DATA\n", i);
+            childs.get(i).print();
+            System.out.println();
+        }
     }
 }
