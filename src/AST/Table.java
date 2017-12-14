@@ -24,7 +24,7 @@ public class Table {
     public Table(Table parent) {
         this.parent = parent;
     }
-    
+
     public boolean addTableRow(TableRow to_add) {
         TableRow result = searchLocal(to_add);
         if (result == null) {
@@ -51,12 +51,13 @@ public class Table {
     public void setParent(Table parent) {
         this.parent = parent;
     }
-    
-    public void addChild(Table child){
+
+    public void addChild(Table child) {
         child.parent = this;
         childs.add(child);
     }
-    public TableRow searchLocal(TableRow id){
+
+    public TableRow searchLocal(TableRow id) {
         for (TableRow row : rows) {
             if (row.equals(id)) {
                 return row;
@@ -64,9 +65,22 @@ public class Table {
         }
         return null;
     }
+
     public TableRow search(TableRow id) {
         for (TableRow row : rows) {
             if (row.equals(id)) {
+                return row;
+            }
+        }
+        if (parent != null) {
+            return parent.search(id);
+        }
+        return null;
+    }
+
+    public TableRow search(String id) {
+        for (TableRow row : rows) {
+            if (row.id.equals(id)) {
                 return row;
             }
         }
@@ -81,10 +95,10 @@ public class Table {
         for (TableRow tr : this.rows) {
             System.out.println(tr.toString());
         }
-        
+
         int size = childs.size();
         System.out.println("CHILD SIZE=" + size);
-        for (int i = 0; i < size; i++){
+        for (int i = 0; i < size; i++) {
             System.out.printf("CHILD[%d] DATA\n", i);
             childs.get(i).print();
             System.out.println();

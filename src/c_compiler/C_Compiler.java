@@ -59,13 +59,13 @@ public class C_Compiler {
             TreeNode x = (TreeNode) cupParser.parse().value;
             x.saveTreeToFile(file);
             x.reduceTreeNode();
-            x.prettyPrint();
+            //x.prettyPrint();
             //x.saveTreeToFile(file);
             Table table = new Table();
-            semantico(x,table);
+            semantico(x, table);
             Thread.sleep(50);
             table.print();
-            //x.saveTreeToFile(file);
+            x.saveTreeToFile(file);
 
         } catch (FileNotFoundException ex) {
             Logger.getLogger(C_Compiler.class.getName()).log(Level.SEVERE, null, ex);
@@ -83,16 +83,61 @@ public class C_Compiler {
             if (child.getValue().value.equals("declaration")) {
                 String type = child.getChilds().get(0).getValue().value.toString();
                 getDeclarations(child.getChilds().get(1), type, table);
-            }else if (child.getValue().value.equals("decl_stmnt_list")){
+            } else if (child.getValue().value.equals("decl_stmnt_list")) {
                 Table child_table = new Table(table);
                 table.addChild(child_table);
                 semantico(child, child_table);
-            }else{
+            } else if (child.getValue().value.equals("=")) {
+                Asignacion(child, table);
+
+            } else {
                 semantico(child, table);
             }
         }
     }
-    
+
+    public static void Asignacion(TreeNode node, Table table) {
+        if (node.getChilds().size() == 2) {
+            TreeNode first = node.getChilds().get(0);
+            TreeNode second = node.getChilds().get(1);
+
+            if (first.getValue().sym == 2) {
+                TableRow firstResult = table.search(first.getValue().value.toString());
+                if (firstResult != null) {
+                    switch (second.getValue().sym) {
+                        case 2:
+                            TableRow secondResult = table.search(second.getValue().value.toString());
+                            if (secondResult != null) {
+                                if (firstResult.type.equals(secondResult.type)) {
+                                    firstResult.value = secondResult.value;
+                                } else {
+                                    System.err.println("Error en la linea " + (first.getValue().right + 1) + ", columna " + first.getValue().left + " en el token " + first.getValue().value + ": Varibales son de diferente tipo");
+                                }
+                            } else {
+                                System.err.println("Error en la linea " + (second.getValue().right + 1) + ", columna " + second.getValue().left + " en el token " + second.getValue().value + ": Variable no ha sido declarada");
+                            }
+                            break;
+                        case 3:
+                        case 4:
+                            if (checkValueType(second, firstResult.type)) {
+                                firstResult.value = second.getValue().value;
+                            } else {
+                                System.err.println("Error en la linea " + (first.getValue().right + 1) + ", columna " + first.getValue().left + " en el token " + first.getValue().value + ": Varibales son de diferente tipo");
+                            }
+                            break;
+                        case 75:
+                            //System.err.println("Aritmetica");
+                            break;
+                        default:
+                            break;
+                    }
+                } else {
+                    System.err.println("Error en la linea " + (first.getValue().right + 1) + ", columna " + first.getValue().left + " en el token " + first.getValue().value + ": Variable no ha sido declarada");
+                }
+            }
+        }
+    }
+
     public static void getDeclarations(TreeNode node, String type, Table table) {
         String id = node.getValue().value.toString();
         ArrayList<TreeNode> node_childs = node.getChilds();

@@ -13,9 +13,9 @@ import java.util.Objects;
  */
 public class TableRow {
 
-    String id;
-    Object value;
-    String type;
+    public String id;
+    public Object value;
+    public String type;
 
     public TableRow() {
         this.id =  "";
