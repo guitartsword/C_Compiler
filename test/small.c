@@ -6,7 +6,7 @@ int somefunc3(double);
 int main(){
     int main;
     aaaa = &vb;
-    main = -6;
+    main = &vb;
     if (1) {
       int x;
     }

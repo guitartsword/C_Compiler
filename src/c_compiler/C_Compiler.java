@@ -107,7 +107,7 @@ public class C_Compiler {
                     if (second.getValue().value.equals("unary_expression")) {
                         if (second.getChilds().get(0).getValue().sym == 71) {
                             if (!firstResult.type.contains("Pointer")) {
-                                System.err.println("Error en la linea " + (second.getValue().right + 1) + ", columna " + second.getValue().left + " en el token " + second.getValue().value + ": Varibales son de diferente tipo");
+                                System.err.println("Error en la linea " + (first.getValue().right + 1) + ", columna " + first.getValue().left + " en el token " + first.getValue().value + ": Varibales son de diferente tipo");
                             }
                         }
                     }
