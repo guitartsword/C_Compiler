@@ -16,6 +16,7 @@ public class TableRow {
     public String id;
     public Object value;
     public String type;
+    public int offset;
 
     public TableRow() {
         this.id =  "";
@@ -27,6 +28,13 @@ public class TableRow {
         this.id = id;
         this.value = value;
         this.type = type;
+    }
+    
+    public TableRow(String id, Object value, String type, int offset) {
+        this.id = id;
+        this.value = value;
+        this.type = type;
+        this.offset = offset;
     }
 
     @Override
@@ -48,7 +56,7 @@ public class TableRow {
 
     @Override
     public String toString() {
-        return "id= " + id + ", value= " + value + ", type= " + type;
+        return "id= " + id + ", value= " + value + ", type= " + type + ", offset= " + offset;
     }
 
 }

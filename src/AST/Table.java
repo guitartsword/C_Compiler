@@ -36,8 +36,8 @@ public class Table {
         return false;
     }
 
-    public boolean addTableRow(String id, Object value, String type) {
-        TableRow to_add = new TableRow(id, value, type);
+    public boolean addTableRow(String id, Object value, String type, int offset) {
+        TableRow to_add = new TableRow(id, value, type, offset);
         TableRow result = searchLocal(to_add);
         if (result == null) {
             this.rows.add(to_add);
@@ -90,6 +90,14 @@ public class Table {
         return null;
     }
 
+    public int getActualOffset() {
+        if (rows.size() > 0) {
+            TableRow lastRow = rows.get(rows.size() - 1);
+            return lastRow.offset + getTypeSize(lastRow.type);
+        }
+        return 0;
+    }
+
     public void print() {
         System.out.println("PARENT");
         for (TableRow tr : this.rows) {
@@ -103,5 +111,24 @@ public class Table {
             childs.get(i).print();
             System.out.println();
         }
+    }
+
+    private static int getTypeSize(String type) {
+        switch (type) {
+            case "char":
+                return 1;
+            case "short":
+                return 2;
+            case "int":
+            case "long":
+            case "float":
+                return 4;
+            case "double":
+                return 10;
+        }
+        if (type.contains("->") ||type.contains("Pointer")) {
+            return 4;
+        }
+        return 0;
     }
 }

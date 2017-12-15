@@ -154,12 +154,14 @@ public class C_Compiler {
                 if (child_id.getValue().value.equals("declarator")) {
                     child_id = child_id.getChilds().get(1);
                     if (checkValueType(child_value, "Pointer(" + type + ")")) {
-                        table.addTableRow(child_id.getValue().value.toString(), child_value.getValue().value, "Pointer(" + type + ")");
+                        int offset = table.getActualOffset();
+                        table.addTableRow(child_id.getValue().value.toString(), child_value.getValue().value, "Pointer(" + type + ")", offset);
                     } else {
                         System.err.println("Error en variable " + child_id.getValue().value.toString() + ", asignacion no es de tipo " + type + "*");
                     }
                 } else if (checkValueType(child_value, type)) {
-                    table.addTableRow(child_id.getValue().value.toString(), child_value.getValue().value, type);
+                    int offset = table.getActualOffset();
+                    table.addTableRow(child_id.getValue().value.toString(), child_value.getValue().value, type, offset);
                 } else {
                     System.err.println("Error en variable " + child_id.getValue().value.toString() + ", asignacion no es de tipo " + type);
                 }
@@ -184,7 +186,8 @@ public class C_Compiler {
                         }
                     }
                     parameter_types = type + " -> " + parameter_types;
-                    table.addTableRow(child_id.getValue().value.toString(), null, parameter_types);
+                    int offset = table.getActualOffset();
+                    table.addTableRow(child_id.getValue().value.toString(), null, parameter_types, offset);
                 } else if (declaration_type.equals("array_declarator")) {
                     //Array declaration here
                 }
@@ -192,10 +195,12 @@ public class C_Compiler {
             }
             case "declarator":
                 child_id = node_childs.get(1);
-                table.addTableRow(child_id.getValue().value.toString(), null, "Pointer(" + type + ")");
+                int offset = table.getActualOffset();
+                table.addTableRow(child_id.getValue().value.toString(), null, "Pointer(" + type + ")", offset);
                 break;
             default:
-                table.addTableRow(id, null, type);
+                offset = table.getActualOffset();
+                table.addTableRow(id, null, type, offset);
         }
     }
 
