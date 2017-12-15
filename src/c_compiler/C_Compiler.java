@@ -104,6 +104,13 @@ public class C_Compiler {
             if (first.getValue().sym == 2) {
                 TableRow firstResult = table.search(first.getValue().value.toString());
                 if (firstResult != null) {
+                    if (second.getValue().value.equals("unary_expression")) {
+                        if (second.getChilds().get(0).getValue().sym == 71) {
+                            if (!firstResult.type.contains("Pointer")) {
+                                System.err.println("Error en la linea " + (second.getValue().right + 1) + ", columna " + second.getValue().left + " en el token " + second.getValue().value + ": Varibales son de diferente tipo");
+                            }
+                        }
+                    }
                     switch (second.getValue().sym) {
                         case 2:
                             TableRow secondResult = table.search(second.getValue().value.toString());
@@ -119,18 +126,19 @@ public class C_Compiler {
                             break;
                         case 3:
                         case 4:
+                        case -1:
                             if (checkValueType(second, firstResult.type)) {
                                 firstResult.value = second.getValue().value;
-                            } else {
+                            } else if (second.getChilds().get(0).getValue().sym != 71) {
                                 System.err.println("Error en la linea " + (first.getValue().right + 1) + ", columna " + first.getValue().left + " en el token " + first.getValue().value + ": Varibales son de diferente tipo");
                             }
                             break;
                         case 75:
                             //System.err.println("Aritmetica");
                             break;
-                        default:
-                            break;
+
                     }
+
                 } else {
                     System.err.println("Error en la linea " + (first.getValue().right + 1) + ", columna " + first.getValue().left + " en el token " + first.getValue().value + ": Variable no ha sido declarada");
                 }
@@ -167,9 +175,6 @@ public class C_Compiler {
                 }
                 break;
             case "direct_declarator": {
-                //[0] == type_declarator
-                //[1] == id
-                //[2] == extra info depending on type
                 String declaration_type = node_childs.get(0).getValue().value.toString();
                 if (declaration_type.equals("function_declarator")) {
                     child_id = node_childs.get(1);

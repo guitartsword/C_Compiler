@@ -126,7 +126,7 @@ public class Table {
             case "double":
                 return 10;
         }
-        if (type.contains("->") ||type.contains("Pointer")) {
+        if (type.contains("->") || type.contains("Pointer")) {
             return 4;
         }
         return 0;
