@@ -124,7 +124,7 @@ public class Table {
             case "float":
                 return 4;
             case "double":
-                return 10;
+                return 8;
         }
         if (type.contains("->") || type.contains("Pointer")) {
             return 4;

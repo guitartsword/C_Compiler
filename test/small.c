@@ -6,13 +6,14 @@ int somefunc3(double);
 int main(){
     int main;
     aaaa = &vb;
-    main = &vb;
+    main = vb;
     if (1) {
-      int x;
+      int x, y;
+      y = 10 *2 + x + 10;
     }
     {
         char x, y, z;
-        x = 10;
+        x = 10 + 7;
         y = 10;
         z = 10;
     }
