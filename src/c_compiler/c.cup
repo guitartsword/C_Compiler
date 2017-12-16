@@ -1,6 +1,6 @@
 package c_compiler;
 
-import AST.TreeNode;
+import helpers.TreeNode;
 import java.io.*;
 import java_cup.runtime.*;
 
@@ -132,6 +132,7 @@ postfix_expression ::=
 	:}
 	| postfix_expression:pe SQUAREDL:sl expression:index SQUAREDR:sd {:
 		TreeNode parent = new TreeNode(null, "postfix_expression");
+		parent.addChild(new Symbol(-1,0,0,"array"));
 		parent.addChild(pe);
 		parent.addChild(index);
 		RESULT = parent;
