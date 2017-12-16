@@ -95,8 +95,12 @@ public class C_Compiler {
                 ArrayList<TreeNode> function_definition_childs = child.getChilds();
                 for(TreeNode function_child: function_definition_childs){
                     semantico(function_child,child_table);
-                }    
-            } else {
+                }
+            } else if(child.getValue().value.equals("decl_stmnt_list") && !parent_node.getValue().value.equals("function_definition")) {
+                Table child_table = new Table(table);
+                table.addChild(child_table);
+                semantico(child,child_table);
+            }else{
                 semantico(child, table);
             }
         }
