@@ -10,6 +10,9 @@ int main(){
   }
   algo(&a);
   for(b=0; b<3; b++){
+    {int x;
+    x=3;}
+    {int x;x=4;}
     printf("for_a=%d\n",a);
   }
   if (a == 3 && b == 2 ) {
