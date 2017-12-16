@@ -16,7 +16,7 @@ public class C_Compiler {
     public static void main(String[] args) throws InterruptedException {
         // TODO code application logic here
         String[] files = {
-            "small"
+            "prueba"
         };
         //buildLexer();
         //buildParser();
@@ -60,8 +60,8 @@ public class C_Compiler {
         try {
             parser cupParser = new parser(new FileReader("test/" + file + ".c"));
             TreeNode AST = (TreeNode) cupParser.parse().value;
-            AST.saveTreeToFile(file);
             AST.reduceTreeNode();
+            AST.saveTreeToFile(file);
             //x.prettyPrint();
             //x.saveTreeToFile(file);
             Table table = new Table();
@@ -69,7 +69,6 @@ public class C_Compiler {
             cuadruplos(AST, table);
             Thread.sleep(50);
             table.print();
-            AST.saveTreeToFile(file);
 
         } catch (FileNotFoundException ex) {
             Logger.getLogger(C_Compiler.class.getName()).log(Level.SEVERE, null, ex);
@@ -84,16 +83,19 @@ public class C_Compiler {
     public static void semantico(TreeNode parent_node, Table table) {
         ArrayList<TreeNode> childs = parent_node.getChilds();
         for (TreeNode child : childs) {
-            if (child.getValue().value.equals("declaration")) {
+            if (child.getValue().value.toString().contains("declaration")) {
                 String type = child.getChilds().get(0).getValue().value.toString();
                 getDeclarations(child.getChilds().get(1), type, table);
-            } else if (child.getValue().value.equals("decl_stmnt_list")) {
-                Table child_table = new Table(table);
-                table.addChild(child_table);
-                semantico(child, child_table);
             } else if (child.getValue().value.equals("=")) {
                 Asignacion(child, table);
 
+            } else if(child.getValue().value.equals("function_definition")){
+                Table child_table = new Table(table);
+                table.addChild(child_table);
+                ArrayList<TreeNode> function_definition_childs = child.getChilds();
+                for(TreeNode function_child: function_definition_childs){
+                    semantico(function_child,child_table);
+                }    
             } else {
                 semantico(child, table);
             }
@@ -128,12 +130,12 @@ public class C_Compiler {
                                 System.err.println("Error en la linea " + (second.getValue().right + 1) + ", columna " + second.getValue().left + " en el token " + second.getValue().value + ": Variable no ha sido declarada");
                             }
                             break;
-                        case 3:
-                        case 4:
+                        case sym.CONSTANT:
+                        case sym.STRING_LITERAL:
                         case -1:
                             if (checkValueType(second, firstResult.type)) {
                                 firstResult.value = second.getValue().value;
-                            } else if (second.getChilds().get(0).getValue().sym != 71) {
+                            } else {
                                 System.err.println("Error en la linea " + (first.getValue().right + 1) + ", columna " + first.getValue().left + " en el token " + first.getValue().value + ": Varibales son de diferente tipo");
                             }
                             break;
@@ -155,6 +157,7 @@ public class C_Compiler {
         ArrayList<TreeNode> node_childs = node.getChilds();
         TreeNode child_id, child_value;
         switch (id) {
+            case "parameter_list":
             case "init_declarator_list":
                 for (TreeNode child : node_childs) {
                     getDeclarations(child, type, table);
@@ -206,6 +209,11 @@ public class C_Compiler {
                 child_id = node_childs.get(1);
                 int offset = table.getActualOffset();
                 table.addTableRow(child_id.getValue().value.toString(), null, "Pointer(" + type + ")", offset);
+                break;
+            case "parameter_declaration":
+                type = node_childs.get(0).getValue().value.toString();
+                child_id = node_childs.get(1);
+                getDeclarations(child_id, type, table);
                 break;
             default:
                 offset = table.getActualOffset();
@@ -329,11 +337,25 @@ public class C_Compiler {
 
     private static TableQuad cuadruplos(TreeNode ast, Table symbols) {
         TableQuad cuadr = new TableQuad();
+        ArrayList<TreeNode> childs = ast.getChilds();
+        /*for (TreeNode child : childs) {
+            if (child.getValue().value.equals("postfix_expression")) {
+                cuadr.concat(IR.generatePostFixExpression());
+            } else if (child.getValue().value.equals("decl_stmnt_list")) {
+            } else if (child.getValue().value.equals("=")) {
+            } else {
+                semantico(child, symbols);
+            }
+        }*/
         int t=0;
         String op;
         String arg1;
         String arg2;
         String res;
+        String param1;
+        String param2;
+        String param3;
+        String param4;
         cuadr.addRow("=", "&vb", "aaaa");
         cuadr.addRow("=", "vb", "main");
         cuadr.addRow("if=", "1","1", "etiq1");
@@ -343,13 +365,34 @@ public class C_Compiler {
         cuadr.addRow("+", "t"+(t-1), "x", "t"+t++);
         cuadr.addRow("+", "t"+(t-1), "10", "t"+t++);
         cuadr.addRow("=", "t"+(t-1), "y");
-        t=0;
+        t=0;//LIMPIAR TEMPORALES
         cuadr.addRow("genetiq", "etiq2");
         cuadr.addRow("+","10","7","x"); //ver si usar o no temporal
         cuadr.addRow("=", "10", "y");
         cuadr.addRow("=", "10", "z");
+        
+        
         arg1 = ""+(int)'c';
         cuadr.addRow("=", arg1, "y");
+        arg1 = ""+1*4;
+        cuadr.addRow("[]=",arg1,"3","a");
+        //GENERATE FUNCTION
+        //PARAM 0
+        arg1 = ""+0*4;
+        param1="t"+t++;
+        cuadr.addRow("=[]","a",arg1,param1);
+        cuadr.addRow("param","0",param1);
+        //PARAM 1
+        arg1 = ""+0*4;
+        param1="t"+t++;
+        cuadr.addRow("=[]","a",arg1,param1);
+        cuadr.addRow("param","1",param1);
+        
+        t=0;//LIMPIAR TEMPORALES
+        //Call funcition
+        cuadr.addRow("call", "somefunc2");
+        cuadr.addRow("=", "RET", "t"+t++);
+        //cuadr.print();
         return cuadr;
     }
 }

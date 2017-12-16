@@ -26,6 +26,9 @@ public class TableQuad {
     public void addRow(String op, String arg1, String arg2, String res){
         rows.add(new TableRowQuad(op,arg1,arg2,res));
     }
+    public void concat(TableQuad other){
+        this.rows.addAll(other.rows);
+    }
     public ArrayList<TableRowQuad> getRows(){
         return rows;
     }
