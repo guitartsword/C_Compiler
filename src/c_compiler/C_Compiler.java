@@ -1,6 +1,9 @@
 package c_compiler;
 
-import AST.*;
+import helpers.TableRow;
+import helpers.TreeNode;
+import helpers.Table;
+import helpers.TableQuad;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.util.ArrayList;
@@ -56,16 +59,17 @@ public class C_Compiler {
         Thread.sleep(50);
         try {
             parser cupParser = new parser(new FileReader("test/" + file + ".c"));
-            TreeNode x = (TreeNode) cupParser.parse().value;
-            x.saveTreeToFile(file);
-            x.reduceTreeNode();
+            TreeNode AST = (TreeNode) cupParser.parse().value;
+            AST.saveTreeToFile(file);
+            AST.reduceTreeNode();
             //x.prettyPrint();
             //x.saveTreeToFile(file);
             Table table = new Table();
-            semantico(x, table);
+            semantico(AST, table);
+            cuadruplos(AST, table);
             Thread.sleep(50);
             table.print();
-            x.saveTreeToFile(file);
+            AST.saveTreeToFile(file);
 
         } catch (FileNotFoundException ex) {
             Logger.getLogger(C_Compiler.class.getName()).log(Level.SEVERE, null, ex);
@@ -321,5 +325,31 @@ public class C_Compiler {
                 break;
         }
         return false;
+    }
+
+    private static TableQuad cuadruplos(TreeNode ast, Table symbols) {
+        TableQuad cuadr = new TableQuad();
+        int t=0;
+        String op;
+        String arg1;
+        String arg2;
+        String res;
+        cuadr.addRow("=", "&vb", "aaaa");
+        cuadr.addRow("=", "vb", "main");
+        cuadr.addRow("if=", "1","1", "etiq1");
+        cuadr.addRow("goto", "etiq2");
+        cuadr.addRow("genetiq", "etiq1");
+        cuadr.addRow("*", "10", "2", "t"+t++);
+        cuadr.addRow("+", "t"+(t-1), "x", "t"+t++);
+        cuadr.addRow("+", "t"+(t-1), "10", "t"+t++);
+        cuadr.addRow("=", "t"+(t-1), "y");
+        t=0;
+        cuadr.addRow("genetiq", "etiq2");
+        cuadr.addRow("+","10","7","x"); //ver si usar o no temporal
+        cuadr.addRow("=", "10", "y");
+        cuadr.addRow("=", "10", "z");
+        arg1 = ""+(int)'c';
+        cuadr.addRow("=", arg1, "y");
+        return cuadr;
     }
 }

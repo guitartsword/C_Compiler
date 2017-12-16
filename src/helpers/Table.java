@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package AST;
+package helpers;
 
 import java.util.ArrayList;
 
@@ -16,11 +16,9 @@ public class Table {
     Table parent = null;
     ArrayList<TableRow> rows = new ArrayList();
     ArrayList<Table> childs = new ArrayList();
-
-    public Table() {
-        this.parent = null;
+    
+    public Table(){
     }
-
     public Table(Table parent) {
         this.parent = parent;
     }
