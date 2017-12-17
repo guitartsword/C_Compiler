@@ -154,7 +154,10 @@ public class C_Compiler {
                         case sym.DIVIDE:
                         case sym.MUL:
                             if (firstResult.type.equals("int")
-                                    || firstResult.type.equals("char")) {
+                                    || firstResult.type.equals("char")
+                                    || firstResult.type.equals("double")
+                                    || firstResult.type.equals("float")
+                                    || firstResult.type.equals("long")) {
                                 aritmetica(node, firstResult.type);
                             } else {
                                 System.err.println("Error en la linea " + (first.getValue().right + 1) + ", columna " + first.getValue().left + " en el token " + first.getValue().value + ": No se puede asignar expresion aritmetica");
