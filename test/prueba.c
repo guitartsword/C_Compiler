@@ -11,9 +11,14 @@ int main(){
   algo(&a,b,b);
   valor(a,b,a);
   for(b=0; b<3; b++){
-    {int x;
-    x=3;}
-    {int x;x=4;}{int x = 3;}
+    {
+      char x;
+      x = 3 + 4 + 'b' * 5 + b;
+    }
+    {
+      int* x;
+      x=&a;
+    }
     printf("for_a=%d\n",a);
   }
   if (a == 3 && b == 2 ) {
