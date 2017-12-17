@@ -61,12 +61,11 @@ public class C_Compiler {
             parser cupParser = new parser(new FileReader("test/" + file + ".c"));
             TreeNode AST = (TreeNode) cupParser.parse().value;
             AST.reduceTreeNode();
-            AST.saveTreeToFile(file);
-            //x.prettyPrint();
-            //x.saveTreeToFile(file);
             Table table = new Table();
+            AST.saveTreeToFile(file);
             semantico(AST, table);
-            cuadruplos(AST, table, 0);
+            cuadruplos(AST, table, 0); 
+            AST.saveTreeToFile(file);
             Thread.sleep(50);
             table.print();
 
@@ -89,18 +88,18 @@ public class C_Compiler {
             } else if (child.getValue().value.equals("=")) {
                 Asignacion(child, table);
 
-            } else if(child.getValue().value.equals("function_definition")){
+            } else if (child.getValue().value.equals("function_definition")) {
                 Table child_table = new Table(table);
                 table.addChild(child_table);
                 ArrayList<TreeNode> function_definition_childs = child.getChilds();
-                for(TreeNode function_child: function_definition_childs){
-                    semantico(function_child,child_table);
+                for (TreeNode function_child : function_definition_childs) {
+                    semantico(function_child, child_table);
                 }
-            } else if(child.getValue().value.equals("decl_stmnt_list") && !parent_node.getValue().value.equals("function_definition")) {
+            } else if (child.getValue().value.equals("decl_stmnt_list") && !parent_node.getValue().value.equals("function_definition")) {
                 Table child_table = new Table(table);
                 table.addChild(child_table);
-                semantico(child,child_table);
-            }else{
+                semantico(child, child_table);
+            } else {
                 semantico(child, table);
             }
         }
@@ -122,7 +121,7 @@ public class C_Compiler {
                         }
                     }
                     switch (second.getValue().sym) {
-                        case 2:
+                        case sym.IDENTIFIER:
                             TableRow secondResult = table.search(second.getValue().value.toString());
                             if (secondResult != null) {
                                 if (firstResult.type.equals(secondResult.type)) {
@@ -137,16 +136,25 @@ public class C_Compiler {
                         case sym.CONSTANT:
                         case sym.STRING_LITERAL:
                         case -1:
-                            if (checkValueType(second, firstResult.type)) {
+                            if (second.getChilds().size() > 0 && second.getChilds().get(0).getValue().sym == 71) {
+
+                            } else if (checkValueType(second, firstResult.type)) {
                                 firstResult.value = second.getValue().value;
-                            } else {
+                            } else if (second.getChilds().size() > 0 && second.getChilds().get(0).getValue().sym != 71 || second.getChilds().size() == 0) {
                                 System.err.println("Error en la linea " + (first.getValue().right + 1) + ", columna " + first.getValue().left + " en el token " + first.getValue().value + ": Varibales son de diferente tipo");
                             }
                             break;
-                        case 75:
-                            //System.err.println("Aritmetica");
+                        case sym.PLUS:
+                        case sym.MINUS:
+                        case sym.DIVIDE:
+                        case sym.MUL:
+                            if (firstResult.type.equals("int")
+                                    || firstResult.type.equals("char")) {
+                                aritmetica(node, firstResult.type);
+                            } else {
+                                System.err.println("Error en la linea " + (first.getValue().right + 1) + ", columna " + first.getValue().left + " en el token " + first.getValue().value + ": No se puede asignar expresion aritmetica");
+                            }
                             break;
-
                     }
 
                 } else {
@@ -180,7 +188,14 @@ public class C_Compiler {
                     }
                 } else if (checkValueType(child_value, type)) {
                     int offset = table.getActualOffset();
-                    table.addTableRow(child_id.getValue().value.toString(), child_value.getValue().value, type, offset);
+                    if (child_value.getValue().sym != sym.PLUS
+                            && child_value.getValue().sym != sym.MUL
+                            && child_value.getValue().sym != sym.DIVIDE
+                            && child_value.getValue().sym != sym.MINUS) {
+                        table.addTableRow(child_id.getValue().value.toString(), child_value.getValue().value, type, offset);
+                    } else {
+                        table.addTableRow(child_id.getValue().value.toString(), null, type, offset);
+                    }
                 } else {
                     System.err.println("Error en variable " + child_id.getValue().value.toString() + ", asignacion no es de tipo " + type);
                 }
@@ -234,21 +249,15 @@ public class C_Compiler {
             case "long":
             case "float":
             case "double":
+            case "char":
                 if (value.sym == 3) {
                     return setValidNumber(value.value.toString(), node, type, false);
                 } else if (value.value.toString().equals("unary_expression")) {
                     return setValidNumber(node.getChilds().get(1).getValue().value.toString(), node, type, true);
                 } else if (value.sym >= 74 && value.sym <= 77) {
-                    Double result = artimetica(node);
-                    if (result < 0) {
-                        result = result * -1;
-                        return setValidNumber(result.toString(), node, type, true);
-                    } else {
-                        return setValidNumber(result.toString(), node, type, false);
-                    }
+                    aritmetica(node, type);
+                    return true;
                 }
-            case "char":
-                return value.sym == 3;
             case "Pointer(char)":
                 return value.sym == 4;
         }
@@ -256,48 +265,145 @@ public class C_Compiler {
         return false;
     }
 
-    public static Double artimetica(TreeNode node) {
-        int id = node.getValue().sym;
-        if (node.getChilds().size() > 0) {
-            if (id != -1) {
-                double a = artimetica(node.getChilds().get(0));
-                double b = artimetica(node.getChilds().get(1));
-                switch (id) {
-                    case 74:
-                        return a - b;
-                    case 75:
-                        return a + b;
-                    case 76:
-                        return a * b;
-                    case 77:
-                        return a / b;
-                    default:
-                        return 0.0;
+    public static void aritmetica(TreeNode node, String type) {
+        int symbol = node.getValue().sym;
+
+        if (node.getChilds().size() == 2) {
+
+            int firstChild = node.getChilds().get(0).getValue().sym;
+            Object a = null;
+            boolean AisNegative = false;
+
+            switch (firstChild) {
+                case sym.CONSTANT:
+                    setValidNumber(node.getChilds().get(0).getValue().value.toString(), node.getChilds().get(0), type, false);
+                    a = node.getChilds().get(0).getValue().value;
+                    break;
+                case sym.PLUS:
+                case sym.MUL:
+                case sym.DIVIDE:
+                case sym.MINUS:
+                    if (node.getChilds().get(0).getChilds().size() > 0) {
+                        aritmetica(node.getChilds().get(0), type);
+                        if (node.getChilds().get(0).getValue().sym == sym.CONSTANT) {
+                            a = node.getChilds().get(0).getValue().value;
+                        }
+                    } else {
+                        System.err.println("Error en la linea " + (node.getChilds().get(0).getValue().right + 1) + ", columna " + node.getChilds().get(0).getValue().left + " en el token " + node.getChilds().get(0).getValue().value + ": Valor en expresion aritmetica no valida");
+                    }
+                    break;
+                case -1:
+                    if (node.getChilds().get(0).getChilds().get(0).equals("-")) {
+                        setValidNumber(node.getChilds().get(0).getChilds().get(1).getValue().value.toString(), node.getChilds().get(0), type, false);
+                        node.getChilds().get(0).setSym(sym.CONSTANT);
+                        node.getChilds().get(0).deleteChilds();
+                        a = node.getChilds().get(0).getValue().value;
+                        AisNegative = true;
+                    } else {
+                        System.err.println("Error en la linea " + (node.getChilds().get(0).getChilds().get(0).getValue().right + 1) + ", columna " + node.getChilds().get(0).getChilds().get(0).getValue().left + " en el token " + node.getChilds().get(0).getChilds().get(0).getValue().value + ": Valor en expresion aritmetica no valida");
+                    }
+                    break;
+                case sym.IDENTIFIER:
+                    break;
+                default:
+                    System.err.println("Error en la linea " + (node.getChilds().get(0).getValue().right + 1) + ", columna " + node.getChilds().get(0).getValue().left + " en el token " + node.getChilds().get(0).getValue().value + ": Valor en expresion aritmetica no valida");
+                    if (node.getValue().sym == sym.PLUS
+                            || node.getValue().sym == sym.MINUS) {
+                        setValidNumber("0", node.getChilds().get(0), type, false);
+                    } else {
+                        setValidNumber("1", node.getChilds().get(0), type, false);
+                    }
+                    node.getChilds().get(0).setSym(sym.CONSTANT);
+                    node.getChilds().get(0).deleteChilds();
+                    a = node.getChilds().get(0).getValue().value;
+                    break;
+            }
+
+            int secondChild = node.getChilds().get(1).getValue().sym;
+            Object b = null;
+            boolean BisNegative = false;
+
+            switch (secondChild) {
+                case sym.CONSTANT:
+                    setValidNumber(node.getChilds().get(1).getValue().value.toString(), node.getChilds().get(1), type, false);
+                    b = node.getChilds().get(1).getValue().value;
+                    break;
+                case sym.PLUS:
+                case sym.MUL:
+                case sym.DIVIDE:
+                case sym.MINUS:
+                    if (node.getChilds().get(1).getChilds().size() > 0) {
+                        aritmetica(node.getChilds().get(1), type);
+                        if (node.getChilds().get(1).getValue().sym == sym.CONSTANT) {
+                            b = node.getChilds().get(1).getValue().value;
+                        }
+                    } else {
+                        System.err.println("Error en la linea " + (node.getChilds().get(1).getValue().right + 1) + ", columna " + node.getChilds().get(1).getValue().left + " en el token " + node.getChilds().get(1).getValue().value + ": Valor en expresion aritmetica no valida");
+                    }
+                    break;
+                case -1:
+                    if (node.getChilds().get(1).getChilds().get(0).equals("-")) {
+                        setValidNumber(node.getChilds().get(1).getChilds().get(1).getValue().value.toString(), node.getChilds().get(1), type, false);
+                        node.getChilds().get(1).setSym(sym.CONSTANT);
+                        node.getChilds().get(1).deleteChilds();
+                        b = node.getChilds().get(1).getValue().value;
+                        BisNegative = true;
+                    } else {
+                        System.err.println("Error en la linea " + (node.getChilds().get(1).getChilds().get(0).getValue().right + 1) + ", columna " + node.getChilds().get(1).getChilds().get(0).getValue().left + " en el token " + node.getChilds().get(1).getChilds().get(0).getValue().value + ": Valor en expresion aritmetica no valida");
+                    }
+                    break;
+                case sym.IDENTIFIER:
+                    break;
+                default:
+                    System.err.println("Error en la linea " + (node.getChilds().get(1).getValue().right + 1) + ", columna " + node.getChilds().get(1).getValue().left + " en el token " + node.getChilds().get(1).getValue().value + ": Valor en expresion aritmetica no valida");
+                    if (node.getValue().sym == sym.PLUS
+                            || node.getValue().sym == sym.MINUS) {
+                        setValidNumber("0", node.getChilds().get(1), type, false);
+                    } else {
+                        setValidNumber("1", node.getChilds().get(1), type, false);
+                    }
+                    node.getChilds().get(1).setSym(sym.CONSTANT);
+                    node.getChilds().get(1).deleteChilds();
+                    b = node.getChilds().get(1).getValue().value;
+                    break;
+            }
+
+            if (a != null && b != null) {
+                Double A = Double.parseDouble(a.toString());
+                if (AisNegative) {
+                    A = A * -1;
                 }
-            } else {
-                TreeNode new_node = node.getChilds().get(1);
-                switch (new_node.getValue().sym) {
-                    case -1:
-                        if (node.getChilds().get(0).getValue().sym == 74) {
-                            return artimetica(new_node) * -1;
-                        } else {
-                            return artimetica(new_node);
-                        }
-                    case 2:
-                        //buscar identifier
-                        return 0.0;
-                    default:
-                        Symbol temp_val = node.getChilds().get(0).getValue();
-                        if (node.getChilds().get(0).getValue().sym == 74) {
-                            return Double.parseDouble(new_node.getValue().value.toString()) * -1;
-                        } else {
-                            System.err.println("Error en la linea " + temp_val.right + ", columna " + temp_val.left + ", no se esperaba " + temp_val.value.toString() + " en operacion aritmetica");
-                            return Double.parseDouble(new_node.getValue().value.toString());
-                        }
+                Double B = Double.parseDouble(b.toString());
+                if (BisNegative) {
+                    B = B * -1;
+                }
+
+                String res = "";
+                switch (symbol) {
+                    case sym.PLUS:
+                        res = Double.toString(A + B);
+                        break;
+                    case sym.MUL:
+                        res = Double.toString(A * B);
+                        break;
+                    case sym.DIVIDE:
+                        res = Double.toString(A / B);
+                        break;
+                    case sym.MINUS:
+                        res = Double.toString(A - B);
+                        break;
+                }
+                if (res.contains("-")) {
+                    res = res.replace("-", "");
+                    if (setValidNumber(res, node, type, true)) {
+                        node.setSym(sym.CONSTANT);
+                        node.deleteChilds();
+                    }
+                } else if (setValidNumber(res, node, type, false)) {
+                    node.setSym(sym.CONSTANT);
+                    node.deleteChilds();
                 }
             }
-        } else {
-            return Double.parseDouble(node.getValue().value.toString());
         }
     }
 
@@ -306,7 +412,6 @@ public class C_Compiler {
         if (value.matches("[0-9.]*")) {
             ret = Double.parseDouble(value);
         } else {
-            String c = value.replace("\'", "");
             Integer ascii = (int) value.replace("\'", "").charAt(0);
             ret = ascii.doubleValue();
         }
@@ -325,6 +430,7 @@ public class C_Compiler {
                 node.setValue(ret.longValue());
                 return true;
             case "int":
+            case "char":
                 node.setValue(ret.intValue());
                 return true;
             case "float":
@@ -333,8 +439,6 @@ public class C_Compiler {
             case "double":
                 node.setValue(ret);
                 return true;
-            default:
-                break;
         }
         return false;
     }
@@ -411,37 +515,36 @@ public class C_Compiler {
         /*int t=0;
         cuadr.addRow("=", "&vb", "aaaa");
         cuadr.addRow("=", "vb", "main");
-        cuadr.addRow("if=", "1","1", "etiq1");
+        cuadr.addRow("if=", "1", "1", "etiq1");
         cuadr.addRow("goto", "etiq2");
         cuadr.addRow("genetiq", "etiq1");
-        cuadr.addRow("*", "10", "2", "t"+t++);
-        cuadr.addRow("+", "t"+(t-1), "x", "t"+t++);
-        cuadr.addRow("+", "t"+(t-1), "10", "t"+t++);
-        cuadr.addRow("=", "t"+(t-1), "y");
-        t=0;//LIMPIAR TEMPORALES
+        cuadr.addRow("*", "10", "2", "t" + t++);
+        cuadr.addRow("+", "t" + (t - 1), "x", "t" + t++);
+        cuadr.addRow("+", "t" + (t - 1), "10", "t" + t++);
+        cuadr.addRow("=", "t" + (t - 1), "y");
+        t = 0;//LIMPIAR TEMPORALES
         cuadr.addRow("genetiq", "etiq2");
-        cuadr.addRow("+","10","7","x"); //ver si usar o no temporal
+        cuadr.addRow("+", "10", "7", "x"); //ver si usar o no temporal
         cuadr.addRow("=", "10", "y");
         cuadr.addRow("=", "10", "z");
-        
-        
-        arg1 = ""+(int)'c';
+
+        arg1 = "" + (int) 'c';
         cuadr.addRow("=", arg1, "y");
-        arg1 = ""+1*4;
-        cuadr.addRow("[]=",arg1,"3","a");
+        arg1 = "" + 1 * 4;
+        cuadr.addRow("[]=", arg1, "3", "a");
         //GENERATE FUNCTION
         //PARAM 0
-        arg1 = ""+0*4;
-        param1="t"+t++;
-        cuadr.addRow("=[]","a",arg1,param1);
-        cuadr.addRow("param","0",param1);
+        arg1 = "" + 0 * 4;
+        param1 = "t" + t++;
+        cuadr.addRow("=[]", "a", arg1, param1);
+        cuadr.addRow("param", "0", param1);
         //PARAM 1
-        arg1 = ""+0*4;
-        param1="t"+t++;
-        cuadr.addRow("=[]","a",arg1,param1);
-        cuadr.addRow("param","1",param1);
-        
-        t=0;//LIMPIAR TEMPORALES
+        arg1 = "" + 0 * 4;
+        param1 = "t" + t++;
+        cuadr.addRow("=[]", "a", arg1, param1);
+        cuadr.addRow("param", "1", param1);
+
+        t = 0;//LIMPIAR TEMPORALES
         //Call funcition
         cuadr.addRow("call", "somefunc2");
         cuadr.addRow("=", "RET", "t"+t++);
