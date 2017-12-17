@@ -65,8 +65,8 @@ public class TreeNode {
         this.value.value = value;
     }
     
-    public void setSymbol(Symbol value) {
-        this.value = value;
+    public void setSym(int value) {
+        this.value.sym = value;
     }
 
     public ArrayList<TreeNode> getChilds() {
