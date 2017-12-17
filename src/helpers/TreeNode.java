@@ -9,6 +9,7 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Objects;
 import java_cup.runtime.Symbol;
 
 /**
@@ -112,7 +113,9 @@ public class TreeNode {
         }
         return tree;
     }
-
+    public boolean valueIsString(String other){
+        return this.value.value.toString().equals(other);
+    }
     public void prettyPrint() {
         String indent = "";
         System.out.println(value.value);

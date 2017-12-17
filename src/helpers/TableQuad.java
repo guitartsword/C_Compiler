@@ -13,7 +13,9 @@ import java.util.ArrayList;
  */
 public class TableQuad {
     ArrayList<TableRowQuad> rows = new ArrayList();
-    
+    ArrayList<TableRowQuad> headerRows = new ArrayList();
+    private int msgcount = 0;
+
     public void addRow(TableRowQuad new_row){
         rows.add(new_row);
     }
@@ -28,13 +30,20 @@ public class TableQuad {
     }
     public void concat(TableQuad other){
         this.rows.addAll(other.rows);
+        this.headerRows.addAll(other.headerRows);
+        this.msgcount+=other.msgcount;
     }
     public ArrayList<TableRowQuad> getRows(){
         return rows;
     }
     public void print(){
-        for(TableRowQuad row:rows){
+        for(TableRowQuad row:headerRows){
             System.out.println(row.toString());
         }
+    }
+
+    public void addMessage(String new_msg) {
+        String msg = ".asciiz "+new_msg;
+        headerRows.add(new TableRowQuad("newmsg", msg));
     }
 }
