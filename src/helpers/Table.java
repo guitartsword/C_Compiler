@@ -95,7 +95,9 @@ public class Table {
         }
         return 0;
     }
-
+    public ArrayList<Table> getChilds(){
+        return childs;
+    }
     public void print() {
         System.out.println("PARENT");
         for (TableRow tr : this.rows) {
