@@ -64,8 +64,8 @@ public class C_Compiler {
             TreeNode AST = (TreeNode) cupParser.parse().value;
             AST.reduceTreeNode();
             Table table = new Table();
-            AST.saveTreeToFile(file);
             semantico(AST, table);
+            AST.saveTreeToFile(file);
             TableQuad quad = cuadruplos(AST, table, 0);
             CodeGen codeGen = new CodeGen(new File("test/" + file+".asm"));
             //codeGen.setMipsHeader(".data\n" + msg + "\n.text\n.globl main\n");
