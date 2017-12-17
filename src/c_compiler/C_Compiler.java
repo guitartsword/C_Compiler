@@ -482,6 +482,8 @@ public class C_Compiler {
                 if(child_value.sym == sym.STRING_LITERAL){
                     cuadr.addMessage(child_value.value.toString());
                     cuadr.addRow("param", "_msgstring");
+                }else{
+                    cuadr.addRow("param", child_value.value.toString());
                 }
             }else if(child.valueIsString("unary_expression")){
                 //Si es un puntero o una direccion
@@ -499,7 +501,12 @@ public class C_Compiler {
             }
         }
         if(params.getParent().getValue().value.equals("postfix_expression") && params.getChilds().isEmpty())
-            cuadr.addRow("param", params.getValue().value.toString());
+            if(params.getValue().sym == sym.STRING_LITERAL){
+                cuadr.addMessage(params.getValue().value.toString());
+                cuadr.addRow("param", "_msgstring");
+            }else{
+                cuadr.addRow("param", params.getValue().value.toString());
+            }
         return cuadr;
     }
     
