@@ -64,7 +64,7 @@ public class C_Compiler {
             Table table = new Table();
             AST.saveTreeToFile(file);
             semantico(AST, table);
-            cuadruplos(AST, table);
+            cuadruplos(AST, table, 0); 
             AST.saveTreeToFile(file);
             Thread.sleep(50);
             table.print();
