@@ -18,7 +18,7 @@ public class C_Compiler {
     public static void main(String[] args) throws InterruptedException {
         // TODO code application logic here
         String[] files = {
-            "prueba"
+            "small"
         };
         //buildLexer();
         //buildParser();
@@ -71,8 +71,6 @@ public class C_Compiler {
             //codeGen.setMipsHeader(".data\n" + msg + "\n.text\n.globl main\n");
             codeGen.generateCode(quad, table);
             Thread.sleep(50);
-            quad.print();
-            table.print();
 
         } catch (FileNotFoundException ex) {
             Logger.getLogger(C_Compiler.class.getName()).log(Level.SEVERE, null, ex);
@@ -461,6 +459,9 @@ public class C_Compiler {
         /*if(ast.getValue().value.equals("postfix_expression")){
             System.out.println(ast);
         }*/
+        if (ast.valueIsString("function_definition") && ast.getParent() == null){
+            cuadr.addRow("gen_sym", ""+scope);
+        }
         for (TreeNode child : childs) {
             if (child.getValue().value.equals("postfix_expression")) {
                 //GENERATE IR POSTFIX EXPRESSION
@@ -478,15 +479,21 @@ public class C_Compiler {
                         //Si es funcion y tiene parametros
                         //obtengo el tercer hijo, puede que tenga hijos
                         TreeNode params = postfix_childs.get(2);
-                        cuadr.concat(getParams(params));
+                        if(arg1Sym.sym == sym.SCANF){
+                            res = params.getValue().value.toString();
+                            arg1 = symbols.search(res).type;
+                            cuadr.addRow("scanf", arg1, res);
+                        }else{
+                            cuadr.concat(getParams(params));
+                        }
                     }
                     //Si el segundo hijo es un operador ++ o --
                     if(arg1Sym.sym == sym.INC_OP || arg1Sym.sym == sym.DEC_OP){
                         cuadr.addRow(arg1Sym.value.toString().substring(0, 1), op, "1", op);
-                    }else{
+                    }else if (arg1Sym.sym != sym.SCANF){
                         cuadr.addRow(op, "_"+arg1Sym.value.toString());
                     }
-                    if(op.equals("function_call")){
+                    if(op.equals("function_call") && arg1Sym.sym != sym.SCANF){
                         cuadr.addRow("=", "RET", "t0");
                     }
                 }
@@ -519,6 +526,7 @@ public class C_Compiler {
                     }
                 }
             } else if(child.valueIsString("function_definition")){
+                cuadr.addRow("gen_sym", ""+scope);
                 Table scope_table = symbols.getChilds().get(scope++);
                 cuadr.concat(cuadruplos(child, scope_table, 0));
             } else if(child.valueIsString("direct_declarator") &&  ast.valueIsString("function_definition")){
@@ -528,7 +536,7 @@ public class C_Compiler {
                     if(!arg1.equals("main"))
                         arg1 = "_" + arg1;
                     arg1 = arg1 + ":";
-                    cuadr.addRow("genetiq",arg1);
+                    cuadr.addRow("genfunc",arg1);
                 }
             } else if (child.getValue().value.equals("decl_stmnt_list") && !ast.getValue().value.equals("function_definition")) {
                 cuadr.concat(cuadruplos(child, symbols, 0));

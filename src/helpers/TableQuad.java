@@ -12,8 +12,8 @@ import java.util.ArrayList;
  * @author Isaias Valle
  */
 public class TableQuad {
-    ArrayList<TableRowQuad> rows = new ArrayList();
-    ArrayList<TableRowQuad> headerRows = new ArrayList();
+    private ArrayList<TableRowQuad> rows = new ArrayList();
+    private ArrayList<TableRowQuad> headerRows = new ArrayList();
     private int msgcount = 0;
 
     public void addRow(TableRowQuad new_row){
@@ -36,8 +36,17 @@ public class TableQuad {
     public ArrayList<TableRowQuad> getRows(){
         return rows;
     }
+
+    public ArrayList<TableRowQuad> getHeaderRows() {
+        return headerRows;
+    }
+    
     public void print(){
         for(TableRowQuad row:headerRows){
+            System.out.println(row.toString());
+        }
+        System.out.println("IRCODE");
+        for(TableRowQuad row:rows){
             System.out.println(row.toString());
         }
     }
