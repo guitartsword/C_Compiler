@@ -27,3 +27,6 @@ move $a0, $a1
 li $v0, 1
 syscall
 move $t0, $v0
+sw 0, -8($fp)
+lw $t0, -8($fp)
+add x, $t0, 1

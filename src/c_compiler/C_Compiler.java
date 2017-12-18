@@ -89,7 +89,13 @@ public class C_Compiler {
             if (child.getValue().value.toString().equals("declaration")
                     || child.getValue().value.equals("parameter_declaration")) {
                 String type = child.getChilds().get(0).getValue().value.toString();
-                getDeclarations(child.getChilds().get(1), type, table);
+                if(parent_node.valueIsString("iteration_statement")){
+                    Table child_table = new Table(table);
+                    table.addChild(child_table);
+                    getDeclarations(child.getChilds().get(1), type, child_table);
+                }else{
+                    getDeclarations(child.getChilds().get(1), type, table);
+                }
             } else if (child.getValue().value.equals("=")) {
                 Asignacion(child, table);
 
@@ -167,9 +173,9 @@ public class C_Compiler {
                 } else {
                     System.err.println("Error en la linea " + (first.getValue().right + 1) + ", columna " + first.getValue().left + " en el token " + first.getValue().value + ": Variable no ha sido declarada");
                 }
-            } else if (first.getValue().sym == -1) {
+            } else if (first.getValue().sym == -1 && !first.valueIsString("ERROR")) {
+                System.err.println(first.getValue().value);
                 TreeNode firstchild = first.getChilds().get(0);
-
                 if (firstchild.getValue().sym == -1) {
                     TreeNode secondchild = first.getChilds().get(1);
                     TableRow firstResult = table.search(secondchild.getValue().value.toString());
