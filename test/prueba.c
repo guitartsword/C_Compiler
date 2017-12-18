@@ -2,7 +2,8 @@
 //int algo(int*);
 int main(){
   int a,b;
-  int array["of"];
+  int c[7];
+  c[6] = -4;
   printf("Ingrese un numero: ");
   scanf("%d",&a);
   while(a > 0){

@@ -110,8 +110,7 @@ public class C_Compiler {
         if (node.getChilds().size() == 2) {
             TreeNode first = node.getChilds().get(0);
             TreeNode second = node.getChilds().get(1);
-
-            if (first.getValue().sym == 2) {
+            if (first.getValue().sym == sym.IDENTIFIER) {
                 TableRow firstResult = table.search(first.getValue().value.toString());
                 if (firstResult != null) {
                     if (second.getValue().value.equals("unary_expression")) {
@@ -164,8 +163,56 @@ public class C_Compiler {
                 } else {
                     System.err.println("Error en la linea " + (first.getValue().right + 1) + ", columna " + first.getValue().left + " en el token " + first.getValue().value + ": Variable no ha sido declarada");
                 }
+            } else if (first.getValue().sym == -1) {
+                TreeNode firstchild = first.getChilds().get(0);
+
+                if (firstchild.getValue().sym == -1) {
+                    TreeNode secondchild = first.getChilds().get(1);
+                    TableRow firstResult = table.search(secondchild.getValue().value.toString());
+                    if (firstResult != null) {
+                        TreeNode thirdchild = first.getChilds().get(2);
+                        String properties[] = arrayParse(firstResult);
+                        String sizeOfArray = properties[0];
+                        String type = properties[1];
+                        if (Integer.parseInt(sizeOfArray) - 1 >= Integer.parseInt(thirdchild.getValue().value.toString())) {
+                            
+                        switch (second.getValue().sym) {
+                            case sym.CONSTANT:
+                                if (type.equals("int")
+                                        || firstResult.type.equals("char")
+                                        || firstResult.type.equals("double")
+                                        || firstResult.type.equals("float")
+                                        || firstResult.type.equals("long")) {
+                                    setValidNumber(second.getValue().value.toString(), second,type,false);
+                                } else {
+                                    System.err.println("Error en la linea " + (thirdchild.getValue().right + 1) + ", columna " + thirdchild.getValue().left + " en el token " + thirdchild.getValue().value + ": Asignacion no es del tipo "+type);
+                                }
+                                break;
+                            case sym.STRING_LITERAL:
+                                if (type.contains("Pointer")) {
+                                    setValidNumber(second.getValue().value.toString(), second,type,false);
+                                } else {
+                                    System.err.println("Error en la linea " + (thirdchild.getValue().right + 1) + ", columna " + thirdchild.getValue().left + " en el token " + thirdchild.getValue().value + ": Asignacion no es del tipo "+type);
+                                }
+                                break;
+                        }
+                        }else{
+                            System.err.println("Error en la linea " + (thirdchild.getValue().right + 1) + ", columna " + thirdchild.getValue().left + " en el token " + thirdchild.getValue().value + ": Asignacion del arreglo fuera del limite");
+                        }
+
+                    }
+
+                }
             }
         }
+    }
+
+    public static String[] arrayParse(TableRow row) {
+        String type = "";
+        type = row.type.replace("array(", "");
+        type = type.replace(")", "");
+        String response[] = type.split(", ");
+        return response;
     }
 
     public static void getDeclarations(TreeNode node, String type, Table table) {
@@ -201,8 +248,8 @@ public class C_Compiler {
                                 table.addTableRow(child_id.getChilds().get(1).getValue().value.toString(), null, "array(" + child_id.getChilds().get(2).getValue().value + ", " + type + ")", offset);
                             }
 
-                        }else{
-                           System.err.println("Error en linea " + (child_id.getChilds().get(1).getValue().right + 1) + ", columna " + child_id.getChilds().get(1).getValue().left + " en el token " + child_id.getChilds().get(1).getValue().value + ": asignacion no es de tipo arreglo " + type); 
+                        } else {
+                            System.err.println("Error en linea " + (child_id.getChilds().get(1).getValue().right + 1) + ", columna " + child_id.getChilds().get(1).getValue().left + " en el token " + child_id.getChilds().get(1).getValue().value + ": asignacion no es de tipo arreglo " + type);
                         }
                     } else if (child_id.getChilds().size() == 2) {
                         table.addTableRow(child_id.getChilds().get(1).getValue().value.toString(), null, "array(0, " + type + ")", offset);
