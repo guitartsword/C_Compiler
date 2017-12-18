@@ -64,7 +64,7 @@ public class C_Compiler {
             Table table = new Table();
             AST.saveTreeToFile(file);
             semantico(AST, table);
-            cuadruplos(AST, table, 0); 
+            cuadruplos(AST, table, 0);
             AST.saveTreeToFile(file);
             Thread.sleep(50);
             table.print();
@@ -82,7 +82,8 @@ public class C_Compiler {
     public static void semantico(TreeNode parent_node, Table table) {
         ArrayList<TreeNode> childs = parent_node.getChilds();
         for (TreeNode child : childs) {
-            if (child.getValue().value.toString().contains("declaration")) {
+            if (child.getValue().value.toString().equals("declaration")
+                    || child.getValue().value.equals("parameter_declaration")) {
                 String type = child.getChilds().get(0).getValue().value.toString();
                 getDeclarations(child.getChilds().get(1), type, table);
             } else if (child.getValue().value.equals("=")) {
@@ -172,6 +173,8 @@ public class C_Compiler {
         ArrayList<TreeNode> node_childs = node.getChilds();
         TreeNode child_id, child_value;
         switch (id) {
+            case "declaration_list":
+                break;
             case "parameter_list":
             case "init_declarator_list":
                 for (TreeNode child : node_childs) {
@@ -187,8 +190,25 @@ public class C_Compiler {
                         int offset = table.getActualOffset();
                         table.addTableRow(child_id.getValue().value.toString(), child_value.getValue().value, "Pointer(" + type + ")", offset);
                     } else {
-                        System.err.println("Error en variable " + child_id.getValue().value.toString() + ", asignacion no es de tipo " + type + "*");
+                        System.err.println("Error en linea " + (child_id.getValue().right + 1) + ", columna " + child_id.getValue().left + " en el token " + child_id.getValue().value + ", asignacion no es de tipo " + type + "*");
                     }
+                } else if (child_id.getValue().value.equals("direct_declarator") && child_id.getChilds().get(0).getValue().value == "array_declarator") {
+                    int offset = table.getActualOffset();
+
+                    if (child_id.getChilds().size() == 3) {
+                        if (child_id.getChilds().get(2).getValue().sym == sym.CONSTANT) {
+                            if (setValidNumber(child_id.getChilds().get(2).getValue().value.toString(), child_id.getChilds().get(2), "int", false)) {
+                                table.addTableRow(child_id.getChilds().get(1).getValue().value.toString(), null, "array(" + child_id.getChilds().get(2).getValue().value + ", " + type + ")", offset);
+                            }
+
+                        }else{
+                           System.err.println("Error en linea " + (child_id.getChilds().get(1).getValue().right + 1) + ", columna " + child_id.getChilds().get(1).getValue().left + " en el token " + child_id.getChilds().get(1).getValue().value + ": asignacion no es de tipo arreglo " + type); 
+                        }
+                    } else if (child_id.getChilds().size() == 2) {
+                        table.addTableRow(child_id.getChilds().get(1).getValue().value.toString(), null, "array(0, " + type + ")", offset);
+                    }
+
+                    System.err.println("Advertencia en la linea " + (child_id.getChilds().get(1).getValue().right + 1) + ", columna " + child_id.getChilds().get(1).getValue().left + " en el token " + child_id.getChilds().get(1).getValue().value + ": no se acepta incializacion de arreglos");
                 } else if (checkValueType(child_value, type)) {
                     int offset = table.getActualOffset();
                     if (child_value.getValue().sym != sym.PLUS
@@ -200,7 +220,7 @@ public class C_Compiler {
                         table.addTableRow(child_id.getValue().value.toString(), null, type, offset);
                     }
                 } else {
-                    System.err.println("Error en variable " + child_id.getValue().value.toString() + ", asignacion no es de tipo " + type);
+                    System.err.println("Error en linea " + (child_id.getValue().right + 1) + ", columna " + child_id.getValue().left + " en el token " + child_id.getValue().value + ": asignacion no es de tipo " + type);
                 }
                 break;
             case "direct_declarator": {
@@ -223,7 +243,20 @@ public class C_Compiler {
                     int offset = table.getActualOffset();
                     table.addTableRow(child_id.getValue().value.toString(), null, parameter_types, offset);
                 } else if (declaration_type.equals("array_declarator")) {
-                    //Array declaration here
+                    child_id = node_childs.get(1);
+                    int offset = table.getActualOffset();
+                    if (node_childs.size() == 3) {
+                        child_value = node_childs.get(2);
+                        if (child_value.getValue().sym == 3) {
+                            if (setValidNumber(child_value.getValue().value.toString(), child_value, "int", false)) {
+                                table.addTableRow(child_id.getValue().value.toString(), null, "array(" + child_value.getValue().value + ", " + type + ")", offset);
+                            }
+                        } else {
+                            System.err.println("Error en linea " + (child_id.getValue().right + 1) + ", columna " + child_id.getValue().left + " en el token " + child_id.getValue().value + ": asignacion no es de tipo arreglo " + type);
+                        }
+                    } else {
+                        table.addTableRow(child_id.getValue().value.toString(), null, "array(0, " + type + ")", offset);
+                    }
                 }
                 break;
             }
@@ -237,6 +270,7 @@ public class C_Compiler {
                 child_id = node_childs.get(1);
                 getDeclarations(child_id, type, table);
                 break;
+
             default:
                 offset = table.getActualOffset();
                 table.addTableRow(id, null, type, offset);
@@ -245,7 +279,6 @@ public class C_Compiler {
 
     public static boolean checkValueType(TreeNode node, String type) {
         Symbol value = node.getValue();
-        Double x;
         switch (type) {
             case "int":
             case "short":
@@ -261,10 +294,10 @@ public class C_Compiler {
                     aritmetica(node, type);
                     return true;
                 }
+                break;
             case "Pointer(char)":
                 return value.sym == 4;
         }
-
         return false;
     }
 
@@ -460,53 +493,54 @@ public class C_Compiler {
             if (child.getValue().value.equals("postfix_expression")) {
                 //GENERATE IR POSTFIX EXPRESSION
                 ArrayList<TreeNode> postfix_childs = child.getChilds();
-                if(postfix_childs.size() >= 2){
+                if (postfix_childs.size() >= 2) {
                     //Si tiene 3 hijos
-                    
+
                     //Primer hijo me dice que operador es
                     op = postfix_childs.get(0).getValue().value.toString();
                     //Obtengo el segundo hijo, normalmente no tiene hijos
                     Symbol arg1Sym = postfix_childs.get(1).getValue();
-                    
+
                     //Si el operador es una function_call entonces
-                    if(op.equals("function_call") && postfix_childs.size() == 3){
+                    if (op.equals("function_call") && postfix_childs.size() == 3) {
                         //Si es funcion y tiene parametros
                         //obtengo el tercer hijo, puede que tenga hijos
                         TreeNode params = postfix_childs.get(2);
                         cuadr.concat(getParams(params));
                     }
                     //Si el segundo hijo es un operador ++ o --
-                    if(arg1Sym.sym == sym.INC_OP || arg1Sym.sym == sym.DEC_OP){
+                    if (arg1Sym.sym == sym.INC_OP || arg1Sym.sym == sym.DEC_OP) {
                         cuadr.addRow(arg1Sym.value.toString().substring(0, 1), op, "1", op);
-                    }else{
+                    } else {
                         cuadr.addRow(op, arg1Sym.value.toString());
                     }
                 }
-            } else if(child.getValue().value.equals("=")){
+            } else if (child.getValue().value.equals("=")) {
                 ArrayList<TreeNode> equal_childs = child.getChilds();
-                if (equal_childs.size() == 2){
+                if (equal_childs.size() == 2) {
                     //Obtengo al que se le asigna
                     TreeNode resNode = equal_childs.get(0);
                     //Lo que se le va a asignar
                     Symbol valueSym = equal_childs.get(1).getValue();
-                    if(valueSym.sym == sym.IDENTIFIER || valueSym.sym == sym.CONSTANT || valueSym.sym == sym.STRING_LITERAL){
-                        if(resNode.getValue().sym != -1){
+                    if (valueSym.sym == sym.IDENTIFIER || valueSym.sym == sym.CONSTANT || valueSym.sym == sym.STRING_LITERAL) {
+                        if (resNode.getValue().sym != -1) {
                             cuadr.addRow("=", valueSym.value.toString(), resNode.getValue().value.toString());
-                        }else if (resNode.getValue().value.equals("unary_expression")){
+                        } else if (resNode.getValue().value.equals("unary_expression")) {
                             ArrayList<TreeNode> unary_childs = resNode.getChilds();
-                            if(unary_childs.size() == 2){
-                            Symbol unary_symbol = unary_childs.get(0).getValue();
-                            String id = unary_symbol.value.toString();
-                            id += unary_childs.get(1).getValue().value.toString();
-                            //Aqui la validacion si es un puntero o una direccion
-                            if(unary_symbol.sym == sym.ADRESS || unary_symbol.sym == sym.MUL)
-                                cuadr.addRow("=", valueSym.value.toString(),id);
+                            if (unary_childs.size() == 2) {
+                                Symbol unary_symbol = unary_childs.get(0).getValue();
+                                String id = unary_symbol.value.toString();
+                                id += unary_childs.get(1).getValue().value.toString();
+                                //Aqui la validacion si es un puntero o una direccion
+                                if (unary_symbol.sym == sym.ADRESS || unary_symbol.sym == sym.MUL) {
+                                    cuadr.addRow("=", valueSym.value.toString(), id);
+                                }
                             }
                         }
                     }
                 }
-            } else if(child.getValue().value.equals("function_definition")){
-                System.out.println("SCOPE="+scope);
+            } else if (child.getValue().value.equals("function_definition")) {
+                System.out.println("SCOPE=" + scope);
                 Table scope_table = symbols.getChilds().get(scope++);
                 cuadruplos(child, scope_table, 0);
             } else if (child.getValue().value.equals("decl_stmnt_list") && !ast.getValue().value.equals("function_definition")) {
@@ -551,7 +585,7 @@ public class C_Compiler {
         //Call funcition
         cuadr.addRow("call", "somefunc2");
         cuadr.addRow("=", "RET", "t"+t++);
-        */
+         */
         cuadr.print();
         return cuadr;
     }
@@ -559,28 +593,30 @@ public class C_Compiler {
     private static TableQuad getParams(TreeNode params) {
         ArrayList<TreeNode> paramChilds = params.getChilds();
         TableQuad cuadr = new TableQuad();
-        for(TreeNode child: paramChilds){
+        for (TreeNode child : paramChilds) {
             String child_value = child.getValue().value.toString();
-            if(child.getChilds().isEmpty() && params.getValue().value.equals("expression")){
+            if (child.getChilds().isEmpty() && params.getValue().value.equals("expression")) {
                 //Si no tiene hijos entonces agrego el parametro
                 cuadr.addRow("param", child_value);
-            }else if(child_value.equals("unary_expression")){
+            } else if (child_value.equals("unary_expression")) {
                 //Si es un puntero o una direccion
-                ArrayList<TreeNode> unary_childs =  child.getChilds();
-                if(unary_childs.size() == 2){
+                ArrayList<TreeNode> unary_childs = child.getChilds();
+                if (unary_childs.size() == 2) {
                     Symbol unary_symbol = unary_childs.get(0).getValue();
                     String param = unary_symbol.value.toString();
                     param += unary_childs.get(1).getValue().value.toString();
                     //Aqui la validacion si es un puntero o una direccion
-                    if(unary_symbol.sym == sym.ADRESS || unary_symbol.sym == sym.MUL)
+                    if (unary_symbol.sym == sym.ADRESS || unary_symbol.sym == sym.MUL) {
                         cuadr.addRow("param", param);
+                    }
                 }
-            }else{
+            } else {
                 getParams(child);
             }
         }
-        if(params.getParent().getValue().value.equals("postfix_expression") && params.getChilds().isEmpty())
+        if (params.getParent().getValue().value.equals("postfix_expression") && params.getChilds().isEmpty()) {
             cuadr.addRow("param", params.getValue().value.toString());
+        }
         return cuadr;
     }
 }
