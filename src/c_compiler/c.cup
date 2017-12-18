@@ -16,13 +16,12 @@ parser code {:
 						errorHead.append(", columna "+(s.left+1));
 				}
 			}
-			errorHead.append(" en el token ");
 			if(s.value != null){
-				errorHead.append(s.value);
+				errorHead.append(" en el token "+s.value);
 			}
-			errorHead.append(": "+errorBody);
+			errorHead.append(": ");
 		}
-		System.err.println(errorHead);
+		System.err.print(errorHead);
 	}
 :};
 
@@ -537,7 +536,7 @@ assignment_expression ::=
 		child.addChild(ae);
 		RESULT = parent;
 		System.err.println("Asignacion solo a identificadores");
-		System.err.println(RESULT);
+		//System.err.println(RESULT);
 	:}
 	;
 
@@ -628,7 +627,7 @@ declaration ::=
 		parent.addChild(new Symbol(-1,0,0,"ERROR"));
 		RESULT = parent;
 		System.err.println("Se esperaba ; en la declaracion:");
-		System.err.println(RESULT);
+		//System.err.println(RESULT);
 	:}
 	;
 
@@ -1381,14 +1380,14 @@ expression_statement ::=
 		parent.addChild(new Symbol(-1,0,0,"ERROR"));
 		RESULT = parent;
 		System.err.println("Se esperaba ; no una declaración");
-		System.err.println(RESULT);
+		//System.err.println(RESULT);
 	:}
 	| error SEMI {:
 		TreeNode parent = new TreeNode(null, "expression_statement");
 		parent.addChild(new Symbol(-1,0,0,"ERROR"));
 		RESULT = parent;
 		System.err.println("Expresion malformada");
-		System.err.println(RESULT);
+		//System.err.println(RESULT);
 	:}
 	;
 
@@ -1511,8 +1510,8 @@ external_declaration ::=
 		TreeNode parent = new TreeNode(null, "external_declaration");
 		parent.addChild(new Symbol(-1,0,0,"ERROR"));
 		RESULT = parent;
-		System.err.println("No se esperaba este token:");
-		System.err.println(RESULT);
+		System.err.println("No se esperaba token");
+		//System.err.println(RESULT);
 	:}
 	;
 

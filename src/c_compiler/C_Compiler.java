@@ -63,9 +63,10 @@ public class C_Compiler {
             parser cupParser = new parser(new FileReader("test/" + file + ".c"));
             TreeNode AST = (TreeNode) cupParser.parse().value;
             AST.reduceTreeNode();
+            AST.saveTreeToFile(file);
             Table table = new Table();
             semantico(AST, table);
-            AST.saveTreeToFile(file);
+            cuadruplos(AST, table, 0);
             TableQuad quad = cuadruplos(AST, table, 0);
             CodeGen codeGen = new CodeGen(new File("test/" + file + ".asm"));
             //codeGen.setMipsHeader(".data\n" + msg + "\n.text\n.globl main\n");
@@ -85,7 +86,8 @@ public class C_Compiler {
     public static void semantico(TreeNode parent_node, Table table) {
         ArrayList<TreeNode> childs = parent_node.getChilds();
         for (TreeNode child : childs) {
-            if (child.getValue().value.toString().contains("declaration")) {
+            if (child.getValue().value.toString().equals("declaration")
+                    || child.getValue().value.equals("parameter_declaration")) {
                 String type = child.getChilds().get(0).getValue().value.toString();
                 getDeclarations(child.getChilds().get(1), type, table);
             } else if (child.getValue().value.equals("=")) {
@@ -112,8 +114,7 @@ public class C_Compiler {
         if (node.getChilds().size() == 2) {
             TreeNode first = node.getChilds().get(0);
             TreeNode second = node.getChilds().get(1);
-
-            if (first.getValue().sym == 2) {
+            if (first.getValue().sym == sym.IDENTIFIER) {
                 TableRow firstResult = table.search(first.getValue().value.toString());
                 if (firstResult != null) {
                     if (second.getValue().value.equals("unary_expression")) {
@@ -166,8 +167,56 @@ public class C_Compiler {
                 } else {
                     System.err.println("Error en la linea " + (first.getValue().right + 1) + ", columna " + first.getValue().left + " en el token " + first.getValue().value + ": Variable no ha sido declarada");
                 }
+            } else if (first.getValue().sym == -1) {
+                TreeNode firstchild = first.getChilds().get(0);
+
+                if (firstchild.getValue().sym == -1) {
+                    TreeNode secondchild = first.getChilds().get(1);
+                    TableRow firstResult = table.search(secondchild.getValue().value.toString());
+                    if (firstResult != null) {
+                        TreeNode thirdchild = first.getChilds().get(2);
+                        String properties[] = arrayParse(firstResult);
+                        String sizeOfArray = properties[0];
+                        String type = properties[1];
+                        if (Integer.parseInt(sizeOfArray) - 1 >= Integer.parseInt(thirdchild.getValue().value.toString())) {
+                            
+                        switch (second.getValue().sym) {
+                            case sym.CONSTANT:
+                                if (type.equals("int")
+                                        || firstResult.type.equals("char")
+                                        || firstResult.type.equals("double")
+                                        || firstResult.type.equals("float")
+                                        || firstResult.type.equals("long")) {
+                                    setValidNumber(second.getValue().value.toString(), second,type,false);
+                                } else {
+                                    System.err.println("Error en la linea " + (thirdchild.getValue().right + 1) + ", columna " + thirdchild.getValue().left + " en el token " + thirdchild.getValue().value + ": Asignacion no es del tipo "+type);
+                                }
+                                break;
+                            case sym.STRING_LITERAL:
+                                if (type.contains("Pointer")) {
+                                    setValidNumber(second.getValue().value.toString(), second,type,false);
+                                } else {
+                                    System.err.println("Error en la linea " + (thirdchild.getValue().right + 1) + ", columna " + thirdchild.getValue().left + " en el token " + thirdchild.getValue().value + ": Asignacion no es del tipo "+type);
+                                }
+                                break;
+                        }
+                        }else{
+                            System.err.println("Error en la linea " + (thirdchild.getValue().right + 1) + ", columna " + thirdchild.getValue().left + " en el token " + thirdchild.getValue().value + ": Asignacion del arreglo fuera del limite");
+                        }
+
+                    }
+
+                }
             }
         }
+    }
+
+    public static String[] arrayParse(TableRow row) {
+        String type = "";
+        type = row.type.replace("array(", "");
+        type = type.replace(")", "");
+        String response[] = type.split(", ");
+        return response;
     }
 
     public static void getDeclarations(TreeNode node, String type, Table table) {
@@ -175,6 +224,8 @@ public class C_Compiler {
         ArrayList<TreeNode> node_childs = node.getChilds();
         TreeNode child_id, child_value;
         switch (id) {
+            case "declaration_list":
+                break;
             case "parameter_list":
             case "init_declarator_list":
                 for (TreeNode child : node_childs) {
@@ -190,8 +241,25 @@ public class C_Compiler {
                         int offset = table.getActualOffset();
                         table.addTableRow(child_id.getValue().value.toString(), child_value.getValue().value, "Pointer(" + type + ")", offset);
                     } else {
-                        System.err.println("Error en variable " + child_id.getValue().value.toString() + ", asignacion no es de tipo " + type + "*");
+                        System.err.println("Error en linea " + (child_id.getValue().right + 1) + ", columna " + child_id.getValue().left + " en el token " + child_id.getValue().value + ", asignacion no es de tipo " + type + "*");
                     }
+                } else if (child_id.getValue().value.equals("direct_declarator") && child_id.getChilds().get(0).getValue().value == "array_declarator") {
+                    int offset = table.getActualOffset();
+
+                    if (child_id.getChilds().size() == 3) {
+                        if (child_id.getChilds().get(2).getValue().sym == sym.CONSTANT) {
+                            if (setValidNumber(child_id.getChilds().get(2).getValue().value.toString(), child_id.getChilds().get(2), "int", false)) {
+                                table.addTableRow(child_id.getChilds().get(1).getValue().value.toString(), null, "array(" + child_id.getChilds().get(2).getValue().value + ", " + type + ")", offset);
+                            }
+
+                        } else {
+                            System.err.println("Error en linea " + (child_id.getChilds().get(1).getValue().right + 1) + ", columna " + child_id.getChilds().get(1).getValue().left + " en el token " + child_id.getChilds().get(1).getValue().value + ": asignacion no es de tipo arreglo " + type);
+                        }
+                    } else if (child_id.getChilds().size() == 2) {
+                        table.addTableRow(child_id.getChilds().get(1).getValue().value.toString(), null, "array(0, " + type + ")", offset);
+                    }
+
+                    System.err.println("Advertencia en la linea " + (child_id.getChilds().get(1).getValue().right + 1) + ", columna " + child_id.getChilds().get(1).getValue().left + " en el token " + child_id.getChilds().get(1).getValue().value + ": no se acepta incializacion de arreglos");
                 } else if (checkValueType(child_value, type)) {
                     int offset = table.getActualOffset();
                     if (child_value.getValue().sym != sym.PLUS
@@ -203,7 +271,7 @@ public class C_Compiler {
                         table.addTableRow(child_id.getValue().value.toString(), null, type, offset);
                     }
                 } else {
-                    System.err.println("Error en variable " + child_id.getValue().value.toString() + ", asignacion no es de tipo " + type);
+                    System.err.println("Error en linea " + (child_id.getValue().right + 1) + ", columna " + child_id.getValue().left + " en el token " + child_id.getValue().value + ": asignacion no es de tipo " + type);
                 }
                 break;
             case "direct_declarator": {
@@ -226,7 +294,20 @@ public class C_Compiler {
                     int offset = table.getActualOffset();
                     table.addTableRow(child_id.getValue().value.toString(), null, parameter_types, offset);
                 } else if (declaration_type.equals("array_declarator")) {
-                    //Array declaration here
+                    child_id = node_childs.get(1);
+                    int offset = table.getActualOffset();
+                    if (node_childs.size() == 3) {
+                        child_value = node_childs.get(2);
+                        if (child_value.getValue().sym == 3) {
+                            if (setValidNumber(child_value.getValue().value.toString(), child_value, "int", false)) {
+                                table.addTableRow(child_id.getValue().value.toString(), null, "array(" + child_value.getValue().value + ", " + type + ")", offset);
+                            }
+                        } else {
+                            System.err.println("Error en linea " + (child_id.getValue().right + 1) + ", columna " + child_id.getValue().left + " en el token " + child_id.getValue().value + ": asignacion no es de tipo arreglo " + type);
+                        }
+                    } else {
+                        table.addTableRow(child_id.getValue().value.toString(), null, "array(0, " + type + ")", offset);
+                    }
                 }
                 break;
             }
@@ -240,6 +321,7 @@ public class C_Compiler {
                 child_id = node_childs.get(1);
                 getDeclarations(child_id, type, table);
                 break;
+
             default:
                 offset = table.getActualOffset();
                 table.addTableRow(id, null, type, offset);
@@ -248,7 +330,6 @@ public class C_Compiler {
 
     public static boolean checkValueType(TreeNode node, String type) {
         Symbol value = node.getValue();
-        Double x;
         switch (type) {
             case "int":
             case "short":
@@ -264,10 +345,10 @@ public class C_Compiler {
                     aritmetica(node, type);
                     return true;
                 }
+                break;
             case "Pointer(char)":
                 return value.sym == 4;
         }
-
         return false;
     }
 

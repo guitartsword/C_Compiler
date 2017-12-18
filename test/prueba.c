@@ -2,6 +2,8 @@
 //int algo(int*);
 int main(){
   int a,b;
+  int c[7];
+  c[6] = -4;
   printf("Ingrese un numero: ");
   scanf("%d",&a);
   while(a > 0){
@@ -10,20 +12,20 @@ int main(){
   }
   algo(&a,b,b);
   valor(a,b,a);
+
   for(b=0; b<3; b++){
-    {
-      char x;
-      x = 3 + 4 + 'b' * 5 + b;
-    }
-    {
-      int* x;
-      x=&a;
-    }
-    printf("for_a=%d\n",a);
+    int x= 10;
+  }
+
+  {
+    int* x;
+    x=&a;
   }
   if (a == 3 && b == 2 ) {
+    int ee;
     printf("Just as expected\n");
   }else{
+    int ee;
     printf("WHAT THE HELL\n");
   }
   printf("a=%d\n", a);
@@ -31,6 +33,7 @@ int main(){
   debug();
   return 0;
 }
+
 void debug(){
   printf("debugging\n");
 }
