@@ -55,20 +55,75 @@ public class CodeGen {
         fileOut.write(toWrite.getBytes());
         //CODE
         for (TableRowQuad row : tr) {
+            toWrite = "";
             switch (row.op) {
+                case "*":
+                    if (toWrite.isEmpty()) {
+                        toWrite = "mul ";
+                    }
+                case "/":
+                    if (toWrite.isEmpty()) {
+                        toWrite = "div ";
+                    }
+                case "+":
+                    if (toWrite.isEmpty()) {
+                        toWrite = "add ";
+                    }
+                case "-":{
+                    if (toWrite.isEmpty()) {
+                        toWrite = "sub ";
+                    }
+                    if (row.arg1.equals("t0")) {
+                        row.arg1 = "$" + row.arg1;
+                    }
+                    if (row.res.equals("t0")) {
+                        row.res = "$" + row.res;
+                    }
+                    toWrite += row.res + ", ";
+                    TableRow search = symbolsTable.search(row.arg1);
+                    if(search != null){
+                        int offset = fixedStack - search.offset -Table.getTypeSize(search.type);
+                        String load = "lw $t0, "+offset+"($fp)\n";
+                        fileOut.write(load.getBytes());
+                        toWrite += "$t0, ";
+                    }else{
+                        toWrite += row.arg1 + ", ";
+                    }
+                    toWrite += row.arg2 + "\n";
+                    fileOut.write(toWrite.getBytes());
+                    break;
+                }
+                case "=": {
+                    if (row.arg1.equals("t0")) {
+                        row.arg1 = "$" + row.arg1;
+                    }else if (row.arg1.equals("RET")){
+                        row.arg1 = "$v0";
+                    }
+                    if (row.res.equals("t0")) {
+                        row.res = "$" + row.res;
+                        toWrite = "move " + row.res + ", " + row.arg1+"\n";
+                    }else{
+                        TableRow search = symbolsTable.search(row.res);
+                        System.out.println(row.res);
+                        int offset = fixedStack - search.offset - Table.getTypeSize(search.type);
+                        toWrite = "sw " + row.arg1 + ", " + offset + "($fp)\n";
+                    }
+                    fileOut.write(toWrite.getBytes());
+                    break;
+                }
                 case "genfunc": {
                     fixedStack = 0;
                     fileOut.write((row.arg1 + "\n").getBytes());
-                    if(row.arg1.equals("main:")){
+                    if (row.arg1.equals("main:")) {
                         toWrite = "move $fp, $sp\nsw $fp, -4($sp)\nsub $sp, $sp, 4\n";
                         fixedStack -= 4;
                         fileOut.write(toWrite.getBytes());
                     }
                     int stackSize = 0;
-                    for(TableRow symRow:symbolsTable.rows){
+                    for (TableRow symRow : symbolsTable.rows) {
                         stackSize += Table.getTypeSize(symRow.type);
                     }
-                    if(stackSize > 0){
+                    if (stackSize > 0) {
                         toWrite = "sub $sp, $sp, " + stackSize + "\n";
                         fileOut.write(toWrite.getBytes());
                     }
@@ -77,25 +132,23 @@ public class CodeGen {
                 case "param": {
                     String param = "$a" + paramCount;
                     if (row.arg1.equals("_msgstring")) {
-                        toWrite = "la "+ param + ", _msg" + msgCount;
+                        toWrite = "la " + param + ", _msg" + msgCount;
                         msgCount++;
                     } else {
                         TableRow search;
                         search = symbolsTable.search(row.arg1);
-                        if(row.arg1.charAt(0) == '&' || row.arg1.charAt(0) == '*'){
+                        if (row.arg1.charAt(0) == '&' || row.arg1.charAt(0) == '*') {
                             search = symbolsTable.search(row.arg1.substring(1));
-                        }else{
-                            search = symbolsTable.search(row.arg1);
                         }
-                        if(search != null){
+                        if (search != null) {
                             int offset = fixedStack - search.offset - Table.getTypeSize(search.type);
-                            if(search.type.contains("Pointer")){
-                                toWrite = "lw $t0,  "+offset+"($fp)\n";
+                            if (search.type.contains("Pointer")) {
+                                toWrite = "lw $t0,  " + offset + "($fp)\n";
                                 toWrite += "move $t1, 0($t0)\n";
-                            }else{
+                            } else {
                                 toWrite = "lw $t0, " + offset + "($fp)\n";
                             }
-                            toWrite += "move "+ param + ", $t" + tempCount;
+                            toWrite += "move " + param + ", $t" + tempCount;
                         }
                     }
                     toWrite += "\n";
@@ -106,7 +159,7 @@ public class CodeGen {
                 case "function_call": {
                     if (row.arg1.equals("_printf")) {
                         toWrite = "li $v0, 4\nsyscall\n";
-                        if(paramCount == 2){
+                        if (paramCount == 2) {
                             toWrite += "move $a0, $a1\nli $v0, 1\nsyscall\n";
                         }
                         fileOut.write(toWrite.getBytes());
@@ -117,21 +170,22 @@ public class CodeGen {
                     paramCount = 0;
                     break;
                 }
-                case "scanf":{
-                    switch(row.arg1){
+                case "scanf": {
+                    switch (row.arg1) {
                         case "int":
-                        case "long":
-                        {
+                        case "long": {
                             TableRow search = symbolsTable.search(row.res);
                             System.out.println(fixedStack);
                             int offset = fixedStack - search.offset - Table.getTypeSize(search.type);
-                            toWrite = "li $v0, 5\nsyscall\nsw $v0, "+offset+"($fp)\n";
+                            toWrite = "li $v0, 5\nsyscall\nsw $v0, " + offset + "($fp)\n";
                             fileOut.write(toWrite.getBytes());
                             break;
                         }
                     }
                     break;
                 }
+                default:
+
             }
         }
         fileOut.close();
