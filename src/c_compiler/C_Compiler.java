@@ -1,9 +1,11 @@
 package c_compiler;
 
+import helpers.CodeGen;
 import helpers.TableRow;
 import helpers.TreeNode;
 import helpers.Table;
 import helpers.TableQuad;
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.util.ArrayList;
@@ -16,7 +18,7 @@ public class C_Compiler {
     public static void main(String[] args) throws InterruptedException {
         // TODO code application logic here
         String[] files = {
-            "prueba"
+            "small"
         };
         //buildLexer();
         //buildParser();
@@ -61,13 +63,15 @@ public class C_Compiler {
             parser cupParser = new parser(new FileReader("test/" + file + ".c"));
             TreeNode AST = (TreeNode) cupParser.parse().value;
             AST.reduceTreeNode();
-            Table table = new Table();
             AST.saveTreeToFile(file);
+            Table table = new Table();
             semantico(AST, table);
             cuadruplos(AST, table, 0);
-            AST.saveTreeToFile(file);
+            TableQuad quad = cuadruplos(AST, table, 0);
+            CodeGen codeGen = new CodeGen(new File("test/" + file + ".asm"));
+            //codeGen.setMipsHeader(".data\n" + msg + "\n.text\n.globl main\n");
+            codeGen.generateCode(quad, table);
             Thread.sleep(50);
-            table.print();
 
         } catch (FileNotFoundException ex) {
             Logger.getLogger(C_Compiler.class.getName()).log(Level.SEVERE, null, ex);
@@ -532,10 +536,13 @@ public class C_Compiler {
         String op;
         String arg1;
         String arg2;
-        String res;
+        String res = "null";
         /*if(ast.getValue().value.equals("postfix_expression")){
             System.out.println(ast);
         }*/
+        if (ast.valueIsString("function_definition") && ast.getParent() == null) {
+            cuadr.addRow("gen_sym", "" + scope);
+        }
         for (TreeNode child : childs) {
             if (child.getValue().value.equals("postfix_expression")) {
                 //GENERATE IR POSTFIX EXPRESSION
@@ -553,13 +560,22 @@ public class C_Compiler {
                         //Si es funcion y tiene parametros
                         //obtengo el tercer hijo, puede que tenga hijos
                         TreeNode params = postfix_childs.get(2);
-                        cuadr.concat(getParams(params));
+                        if (arg1Sym.sym == sym.SCANF) {
+                            res = params.getValue().value.toString();
+                            arg1 = symbols.search(res).type;
+                            cuadr.addRow("scanf", arg1, res);
+                        } else {
+                            cuadr.concat(getParams(params));
+                        }
                     }
                     //Si el segundo hijo es un operador ++ o --
                     if (arg1Sym.sym == sym.INC_OP || arg1Sym.sym == sym.DEC_OP) {
                         cuadr.addRow(arg1Sym.value.toString().substring(0, 1), op, "1", op);
-                    } else {
-                        cuadr.addRow(op, arg1Sym.value.toString());
+                    } else if (arg1Sym.sym != sym.SCANF) {
+                        cuadr.addRow(op, "_" + arg1Sym.value.toString());
+                    }
+                    if (op.equals("function_call") && arg1Sym.sym != sym.SCANF) {
+                        cuadr.addRow("=", "RET", "t0");
                     }
                 }
             } else if (child.getValue().value.equals("=")) {
@@ -567,33 +583,63 @@ public class C_Compiler {
                 if (equal_childs.size() == 2) {
                     //Obtengo al que se le asigna
                     TreeNode resNode = equal_childs.get(0);
-                    //Lo que se le va a asignar
-                    Symbol valueSym = equal_childs.get(1).getValue();
-                    if (valueSym.sym == sym.IDENTIFIER || valueSym.sym == sym.CONSTANT || valueSym.sym == sym.STRING_LITERAL) {
-                        if (resNode.getValue().sym != -1) {
-                            cuadr.addRow("=", valueSym.value.toString(), resNode.getValue().value.toString());
-                        } else if (resNode.getValue().value.equals("unary_expression")) {
-                            ArrayList<TreeNode> unary_childs = resNode.getChilds();
-                            if (unary_childs.size() == 2) {
-                                Symbol unary_symbol = unary_childs.get(0).getValue();
-                                String id = unary_symbol.value.toString();
-                                id += unary_childs.get(1).getValue().value.toString();
-                                //Aqui la validacion si es un puntero o una direccion
-                                if (unary_symbol.sym == sym.ADRESS || unary_symbol.sym == sym.MUL) {
-                                    cuadr.addRow("=", valueSym.value.toString(), id);
-                                }
+                    Symbol resSymbol = resNode.getValue();
+                    if (resSymbol.sym != -1) {
+                        res = resSymbol.value.toString();
+                    } else if (resNode.valueIsString("unary_expression")) {
+                        ArrayList<TreeNode> unary_childs = resNode.getChilds();
+                        if (unary_childs.size() == 2) {
+                            Symbol unary_symbol = unary_childs.get(0).getValue();
+                            String id = unary_symbol.value.toString();
+                            id += unary_childs.get(1).getValue().value.toString();
+                            //Aqui la validacion si es un puntero o una direccion
+                            if (unary_symbol.sym == sym.ADRESS || unary_symbol.sym == sym.MUL) {
+                                res = id;
                             }
                         }
                     }
+                    //Lo que se le va a asignar
+                    Symbol valueSym = equal_childs.get(1).getValue();
+                    if (valueSym.sym == sym.IDENTIFIER || valueSym.sym == sym.CONSTANT || valueSym.sym == sym.STRING_LITERAL) {
+                        cuadr.addRow("=", valueSym.value.toString(), res);
+                    } else {
+                        cuadr.concat(cuadruplos(child, symbols, scope));
+                        //RET contiene el valor de la aritmetica
+                        cuadr.addRow("=", "t0", res);
+                    }
                 }
-            } else if (child.getValue().value.equals("function_definition")) {
-                System.out.println("SCOPE=" + scope);
+            } else if (child.valueIsString("function_definition")) {
+                cuadr.addRow("gen_sym", "" + scope);
                 Table scope_table = symbols.getChilds().get(scope++);
-                cuadruplos(child, scope_table, 0);
+                cuadr.concat(cuadruplos(child, scope_table, 0));
+            } else if (child.valueIsString("direct_declarator") && ast.valueIsString("function_definition")) {
+                ArrayList<TreeNode> direct_declarator_childs = child.getChilds();
+                if (direct_declarator_childs.get(0).getValue().value.equals("function_declarator")) {
+                    arg1 = direct_declarator_childs.get(1).getValue().value.toString();
+                    if (!arg1.equals("main")) {
+                        arg1 = "_" + arg1;
+                    }
+                    arg1 = arg1 + ":";
+                    cuadr.addRow("genfunc", arg1);
+                }
             } else if (child.getValue().value.equals("decl_stmnt_list") && !ast.getValue().value.equals("function_definition")) {
-                cuadruplos(child, symbols, 0);
-            } else {
-                cuadruplos(child, symbols, scope);
+                cuadr.concat(cuadruplos(child, symbols, 0));
+            } else if (child.getValue().sym == sym.MUL || child.getValue().sym == sym.DIVIDE
+                    || child.getValue().sym == sym.PLUS || child.getValue().sym == sym.MINUS) {
+                //Haciendo los calculos de aritmetica
+                Symbol left_op = child.getChilds().get(0).getValue();
+                Symbol right_op = child.getChilds().get(1).getValue();
+                cuadr.concat(cuadruplos(child,symbols,scope));
+                op = child.getValue().value.toString();
+                if(left_op.sym != sym.CONSTANT && left_op.sym != sym.IDENTIFIER)
+                    arg1 = "t0";
+                else
+                    arg1 = left_op.value.toString();
+                arg2=right_op.value.toString();
+                res = "t0";
+                cuadr.addRow(op, arg1, arg2, res);
+            }else {
+                cuadr.concat(cuadruplos(child, symbols, scope));
             }
         }
         /*int t=0;
@@ -633,7 +679,7 @@ public class C_Compiler {
         cuadr.addRow("call", "somefunc2");
         cuadr.addRow("=", "RET", "t"+t++);
          */
-        cuadr.print();
+        //cuadr.print();
         return cuadr;
     }
 
@@ -641,11 +687,16 @@ public class C_Compiler {
         ArrayList<TreeNode> paramChilds = params.getChilds();
         TableQuad cuadr = new TableQuad();
         for (TreeNode child : paramChilds) {
-            String child_value = child.getValue().value.toString();
-            if (child.getChilds().isEmpty() && params.getValue().value.equals("expression")) {
+            Symbol child_value = child.getValue();
+            if (child.getChilds().isEmpty() && params.valueIsString("expression")) {
                 //Si no tiene hijos entonces agrego el parametro
-                cuadr.addRow("param", child_value);
-            } else if (child_value.equals("unary_expression")) {
+                if (child_value.sym == sym.STRING_LITERAL) {
+                    cuadr.addMessage(child_value.value.toString());
+                    cuadr.addRow("param", "_msgstring");
+                } else {
+                    cuadr.addRow("param", child_value.value.toString());
+                }
+            } else if (child.valueIsString("unary_expression")) {
                 //Si es un puntero o una direccion
                 ArrayList<TreeNode> unary_childs = child.getChilds();
                 if (unary_childs.size() == 2) {
@@ -662,8 +713,14 @@ public class C_Compiler {
             }
         }
         if (params.getParent().getValue().value.equals("postfix_expression") && params.getChilds().isEmpty()) {
-            cuadr.addRow("param", params.getValue().value.toString());
+            if (params.getValue().sym == sym.STRING_LITERAL) {
+                cuadr.addMessage(params.getValue().value.toString());
+                cuadr.addRow("param", "_msgstring");
+            } else {
+                cuadr.addRow("param", params.getValue().value.toString());
+            }
         }
         return cuadr;
     }
+
 }

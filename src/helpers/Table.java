@@ -113,7 +113,7 @@ public class Table {
         }
     }
 
-    private static int getTypeSize(String type) {
+    public static int getTypeSize(String type) {
         switch (type) {
             case "char":
                 return 1;
